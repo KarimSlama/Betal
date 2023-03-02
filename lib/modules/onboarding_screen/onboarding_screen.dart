@@ -16,24 +16,24 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   List<BoardingModel> boarding = [
     BoardingModel(
-      image: 'assets/images/image.jpg',
+      image: 'assets/images/prayer.png',
       title: 'Prayer',
       body: 'Ability to manage daily prayer\nalerts.',
     ),
     BoardingModel(
-      image: 'assets/images/image.jpg',
+      image: 'assets/images/pray.png',
       title: 'Call To Prayer With',
       body:
           'Choose a call to prayer sounds and calendar type between Hijri and Georgian.',
     ),
     BoardingModel(
-      image: 'assets/images/image.jpg',
+      image: 'assets/images/compas_on.png',
       title: 'In advance or delay\nprayer alert (minutes)',
       body:
           'Managing default setting for the prayers and the ability to add duration or delay it.',
     ),
     BoardingModel(
-      image: 'assets/images/image.jpg',
+      image: 'assets/images/dark_theme.png',
       title: 'Dark Mode & Home\nWidget',
       body:
           'Ability to activate the dark mode and add Widget to your phone\'s Home screen.',
@@ -46,12 +46,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     });
   }
 
+  bool isLast = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xfffafafa),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xfffafafa),
         elevation: 0.0,
       ),
       body: Column(
@@ -65,6 +67,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               itemBuilder: (context, index) =>
                   buildBoardingItems(boarding[index]),
               itemCount: boarding.length,
+              onPageChanged: (value) {
+                if (value == boarding.length - 1) {
+                  setState(() {
+                    isLast = true;
+                  });
+                } else {
+                  isLast = false;
+                }
+              },
             ),
           ),
           const SizedBox(
@@ -113,10 +124,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           children: [
             Image(
               image: AssetImage(model.image),
-              height: 250.0,
+              fit: BoxFit.cover,
+              height: 275.0,
             ),
             const SizedBox(
-              height: 100.0,
+              height: 90.0,
             ),
             Text(
               textAlign: TextAlign.center,
