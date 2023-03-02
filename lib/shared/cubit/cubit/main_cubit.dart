@@ -8,7 +8,6 @@ import 'package:Betal/modules/nearest_masjed_screen/nearest_masjed_screen.dart';
 import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
 import 'package:Betal/shared/components/constants.dart';
-import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:Betal/shared/data/cache_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
@@ -85,6 +84,7 @@ class MainCubit extends Cubit<MainState> {
       },
     ).then((value) {
       prayerDataModel = PrayerDataModel.fromJson(value.data);
+      // timingsList.add(value.data);
       print(value);
       emit(GetTimeWithCitySuccessState());
     }).catchError((error) {
@@ -136,8 +136,22 @@ class MainCubit extends Cubit<MainState> {
     // country = CacheHelper.getData(key: 'country');
   }
 
-  void changeNotificationIcon(){
+  bool isOpen = true;
 
+  // void changeExpansionTileIcon(isOpened) {
+  //   isOpen = !isOpened;
+  //   emit(ExpansionTileIconChangedState());
+  // }
+
+  void changeNotificationIcon() {
+    isOpen = !isOpen;
+    emit(NotificationIconChangedState());
   }
 
+  bool isSwitch = true;
+
+  void changeSwitchIcon(isSwitched) {
+    isSwitch = isSwitched;
+    emit(SwitchIconChangedState());
+  }
 }

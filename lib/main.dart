@@ -26,8 +26,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => MainCubit()
         ..getAddressName()
-        ..getTimeWithCity(city: city, country: country),
-      lazy: false,
+        ..getTimeWithCity(city: city!, country: country!),
       // ..startTimer()
       // ..reset()
       child: MaterialApp(

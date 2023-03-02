@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
   var isBoarding = CacheHelper.getData(key: 'onBoarding');
 
   Future navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 4), () {
+    await Future.delayed(const Duration(seconds: 2), () {
       if (isBoarding != null) {
         widget = const MainLayout();
       } else {

@@ -56,6 +56,8 @@ dependencies:
   date_format: ^2.0.7
   hijri_picker: ^3.0.0
   hijri: ^3.0.0
+  localization: ^2.1.0
+  intl:
 
 dev_dependencies:
   flutter_test:

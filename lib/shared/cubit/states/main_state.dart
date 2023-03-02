@@ -17,3 +17,8 @@ class GetTimeWithCityLoadingState extends MainState {}
 class GetTimeWithCitySuccessState extends MainState {}
 
 class GetTimeWithCityErrorState extends MainState {}
+
+class ExpansionTileIconChangedState extends MainState {}
+class NotificationIconChangedState extends MainState {}
+
+class SwitchIconChangedState extends MainState {}

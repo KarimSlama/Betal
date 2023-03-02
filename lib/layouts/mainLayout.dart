@@ -4,11 +4,11 @@ import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:Betal/styles/icon_broken.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hijri/hijri_calendar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:whatsapp_share/whatsapp_share.dart';
@@ -22,163 +22,175 @@ class MainLayout extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         var main = MainCubit.getContext(context).prayerDataModel;
-        return DefaultTabController(
-          length: 4,
-          child: SafeArea(
-            child: Scaffold(
-              body: Container(
-                decoration: BoxDecoration(
-                    image: const DecorationImage(
-                  image: AssetImage(
-                    'assets/images/light_bk.jpg',
-                  ),
-                  fit: BoxFit.cover,
-                )),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+        return ConditionalBuilder(
+          condition: main != null,
+          builder: (context) {
+            return DefaultTabController(
+              length: 4,
+              child: SafeArea(
+                child: Scaffold(
+                  body: Container(
+                    decoration: const BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage(
+                        'assets/images/light_bk.jpg',
+                      ),
+                      fit: BoxFit.cover,
+                    )),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            children: [
+                              Text(
+                                '$city',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w500,
+                                    color: (currentDate.timeZoneOffset.inHours <
+                                                5 &&
+                                            currentDate.hour > 20)
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
+                              IconButton(
+                                  padding: EdgeInsetsDirectional.zero,
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.refresh),
+                                  iconSize: 16,
+                                  color:
+                                      (currentDate.timeZoneOffset.inHours < 5 &&
+                                              currentDate.hour > 20)
+                                          ? Colors.white
+                                          : Colors.black),
+                              const Spacer(),
+                              IconButton(
+                                  onPressed: () {
+                                    isInstalled(context);
+                                  },
+                                  icon: const Icon(FontAwesomeIcons.whatsapp),
+                                  iconSize: 30,
+                                  color:
+                                      (currentDate.timeZoneOffset.inHours < 5 &&
+                                              currentDate.hour > 20)
+                                          ? Colors.white
+                                          : Colors.black),
+                              IconButton(
+                                  onPressed: () {
+                                    Share.share(
+                                        'Free Download Prayer Times For all cities around the world');
+                                  },
+                                  icon: const Icon(Icons.share_outlined),
+                                  iconSize: 30,
+                                  color:
+                                      (currentDate.timeZoneOffset.inHours < 5 &&
+                                              currentDate.hour > 20)
+                                          ? Colors.white
+                                          : Colors.black),
+                              IconButton(
+                                  onPressed: () {
+                                    navigateTo(context, const SettingsScreen());
+                                  },
+                                  icon: const Icon(Icons.settings),
+                                  iconSize: 30,
+                                  color:
+                                      (currentDate.timeZoneOffset.inHours < 5 &&
+                                              currentDate.hour > 20)
+                                          ? Colors.white
+                                          : Colors.black),
+                            ],
+                          ),
                           Text(
-                            '$city',
-                            style: GoogleFonts.poppins(
+                            '${main!.data!.date!.gregorian!.weekday!.en}',
+                            style: TextStyle(
                                 fontSize: 14.0,
-                                fontWeight: FontWeight.w500,
                                 color:
                                     (currentDate.timeZoneOffset.inHours < 5 &&
                                             currentDate.hour > 20)
                                         ? Colors.white
                                         : Colors.black),
                           ),
-                          IconButton(
-                              padding: EdgeInsetsDirectional.zero,
-                              onPressed: () {},
-                              icon: const Icon(Icons.refresh),
-                              iconSize: 16,
+                          const SizedBox(
+                            height: 7.0,
+                          ),
+                          Text(
+                            '${main.data!.date!.hijri!.day!} ${main.data!.date!.hijri!.month!.en}, ${main.data!.date!.hijri!.year}',
+                            style: TextStyle(
+                              fontSize: 14.0,
                               color: (currentDate.timeZoneOffset.inHours < 5 &&
                                       currentDate.hour > 20)
                                   ? Colors.white
-                                  : Colors.black),
-                          const Spacer(),
-                          IconButton(
-                              onPressed: () {
-                                isInstalled(context);
-                              },
-                              icon: const Icon(FontAwesomeIcons.whatsapp),
-                              iconSize: 30,
-                              color: (currentDate.timeZoneOffset.inHours < 5 &&
-                                      currentDate.hour > 20)
-                                  ? Colors.white
-                                  : Colors.black),
-                          IconButton(
-                              onPressed: () {
-                                Share.share(
-                                    'Free Download Prayer Times For all cities around the world');
-                              },
-                              icon: const Icon(Icons.share_outlined),
-                              iconSize: 30,
-                              color: (currentDate.timeZoneOffset.inHours < 5 &&
-                                      currentDate.hour > 20)
-                                  ? Colors.white
-                                  : Colors.black),
-                          IconButton(
-                              onPressed: () {
-                                navigateTo(context, const SettingsScreen());
-                              },
-                              icon: const Icon(Icons.settings),
-                              iconSize: 30,
-                              color: (currentDate.timeZoneOffset.inHours < 5 &&
-                                      currentDate.hour > 20)
-                                  ? Colors.white
-                                  : Colors.black),
+                                  : Colors.black,
+                            ),
+                          ),
+                          MainCubit.getContext(context).screens[
+                              MainCubit.getContext(context).currentIndex],
                         ],
                       ),
-                      Text(
-                        '${main!.data!.date!.gregorian!.weekday!.en}',
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            color: (currentDate.timeZoneOffset.inHours < 5 &&
-                                    currentDate.hour > 20)
-                                ? Colors.white
-                                : Colors.black),
+                    ),
+                  ),
+                  bottomNavigationBar: Container(
+                    height: 90.0,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topStart: Radius.circular(30.0),
+                        topEnd: Radius.circular(30.0),
                       ),
-                      const SizedBox(
-                        height: 7.0,
-                      ),
-                      Text(
-                        '${main.data!.date!.hijri!.day!} ${main.data!.date!.hijri!.month!.en}, ${main.data!.date!.hijri!.year}',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: (currentDate.timeZoneOffset.inHours < 5 &&
-                                  currentDate.hour > 20)
-                              ? Colors.white
-                              : Colors.black,
+                      color: Colors.white,
+                    ),
+                    padding: const EdgeInsetsDirectional.only(bottom: 10.0),
+                    child: TabBar(
+                      padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 15.0),
+                      onTap: (index) {
+                        MainCubit.getContext(context)
+                            .changeBottomNavigation(index);
+                      },
+                      labelColor: Colors.black,
+                      indicatorColor: bottomIndicator,
+                      indicatorWeight: 3,
+                      labelPadding: const EdgeInsets.all(10.0),
+                      tabs: const [
+                        Tab(
+                          icon: Icon(
+                            FontAwesomeIcons.personPraying,
+                            color: Colors.black,
+                          ),
+                          text: 'Prayers',
                         ),
-                      ),
-                      MainCubit.getContext(context)
-                          .screens[MainCubit.getContext(context).currentIndex],
-                    ],
+                        Tab(
+                          icon: Icon(
+                            FontAwesomeIcons.starOfDavid,
+                            size: 22.0,
+                            color: Colors.black,
+                          ),
+                          text: 'Qibla',
+                        ),
+                        Tab(
+                          icon: Icon(
+                            IconBroken.Location,
+                            color: Colors.black,
+                          ),
+                          text: 'Nearest',
+                        ),
+                        Tab(
+                          icon: Icon(
+                            Icons.calendar_month_outlined,
+                            color: Colors.black,
+                          ),
+                          text: 'Calendar',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              bottomNavigationBar: Container(
-                height: 90.0,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadiusDirectional.only(
-                    topStart: Radius.circular(30.0),
-                    topEnd: Radius.circular(30.0),
-                  ),
-                  color: Colors.white,
-                ),
-                padding: const EdgeInsetsDirectional.only(bottom: 10.0),
-                child: TabBar(
-                  padding:
-                      const EdgeInsetsDirectional.symmetric(horizontal: 15.0),
-                  onTap: (index) {
-                    MainCubit.getContext(context).changeBottomNavigation(index);
-                  },
-                  labelColor: Colors.black,
-                  indicatorColor: bottomIndicator,
-                  indicatorWeight: 3,
-                  labelPadding: const EdgeInsets.all(10.0),
-                  tabs: const [
-                    Tab(
-                      icon: Icon(
-                        FontAwesomeIcons.personPraying,
-                        color: Colors.black,
-                      ),
-                      text: 'Prayers',
-                    ),
-                    Tab(
-                      icon: Icon(
-                        FontAwesomeIcons.starOfDavid,
-                        size: 22.0,
-                        color: Colors.black,
-                      ),
-                      text: 'Qibla',
-                    ),
-                    Tab(
-                      icon: Icon(
-                        IconBroken.Location,
-                        color: Colors.black,
-                      ),
-                      text: 'Nearest',
-                    ),
-                    Tab(
-                      icon: Icon(
-                        Icons.calendar_month_outlined,
-                        color: Colors.black,
-                      ),
-                      text: 'Calendar',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+            );
+          },
+          fallback: (context) => const Center(child: CircularProgressIndicator()),
         );
       },
     );
