@@ -1,15 +1,19 @@
 import 'package:Betal/layouts/mainLayout.dart';
 import 'package:Betal/shared/components/components.dart';
-import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MainCubit, MainState>(
@@ -56,10 +60,7 @@ class SettingsScreen extends StatelessWidget {
                 Theme(
                   data: ThemeData().copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
-                    onExpansionChanged: (value) {
-                      // MainCubit.getContext(context)
-                      //     .changeExpansionTileIcon(value);
-                    },
+                    onExpansionChanged: (value) {},
                     title: const Text(
                       'Location',
                       style: TextStyle(
@@ -67,10 +68,10 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     collapsedTextColor: Colors.green.shade800,
-                    trailing: MainCubit.getContext(context).isOpen
-                        ? const Icon(Icons.arrow_forward_ios_outlined)
-                        : Icon(Icons.keyboard_arrow_down_rounded,
-                            color: Colors.green.shade800),
+                    trailing: isOpen
+                        ? Icon(Icons.keyboard_arrow_down_rounded,
+                            color: Colors.green.shade800)
+                        : const Icon(Icons.arrow_forward_ios_outlined),
                     children: [
                       customSwitch(
                         context,
@@ -87,10 +88,7 @@ class SettingsScreen extends StatelessWidget {
                 Theme(
                   data: ThemeData().copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
-                    onExpansionChanged: (value) {
-                      // MainCubit.getContext(context)
-                      //     .changeExpansionTileIcon(value);
-                    },
+                    onExpansionChanged: (value) {},
                     title: const Text(
                       'Call To Prayer With',
                       style: TextStyle(
@@ -98,28 +96,16 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     collapsedTextColor: Colors.green.shade800,
-                    trailing: MainCubit.getContext(context).isOpen
-                        ? const Icon(Icons.arrow_forward_ios_outlined)
-                        : Icon(Icons.keyboard_arrow_down_rounded,
-                            color: Colors.green.shade800),
+                    trailing: isOpen
+                        ? Icon(Icons.keyboard_arrow_down_rounded,
+                            color: Colors.green.shade800)
+                        : const Icon(Icons.arrow_forward_ios_outlined),
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Column(
-                            children: [
-                              Expanded(
-                                child: ListView.separated(
-                                  itemBuilder: (context, index) =>
-                                      buildPrayerCall(),
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  itemCount: 5,
-                                ),
-                              ),
-                            ],
+                            children: [],
                           ),
                           const Spacer(),
                           CircleAvatar(
@@ -142,6 +128,9 @@ class SettingsScreen extends StatelessWidget {
       },
     );
   }
+
+  int selected = 0;
+  bool isOpen = true;
 
   Widget customSwitch(
           context, String text, bool isSwitch, Function onChangeMethod) =>
@@ -194,5 +183,14 @@ class SettingsScreen extends StatelessWidget {
         ),
       );
 
-  Widget buildPrayerCall() => const Text('Ahmed Al Nafis');
+  List<String> prayerList = [
+    'Ahmed Alnafis',
+    'Yousef Moaty',
+    'Ahmed Alnafis',
+    'Ahmed Alnafis',
+    'Ahmed Alnafis',
+    'Ahmed Alnafis',
+  ];
+
+  Widget buildPrayerCall(index) => Text(prayerList[index]);
 }

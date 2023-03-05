@@ -20,7 +20,7 @@ class Gregorian {
         ? null
         : GregorianWeekday.fromJson(json["weekday"]);
     month =
-        json["month"] == null ? null : GregorianMonth.fromJson(json["month"]);
+    json["month"] == null ? null : GregorianMonth.fromJson(json["month"]);
     year = json["year"];
   }
 

@@ -36,7 +36,7 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     timings =
-        json['timings'] != null ? Timings.fromJson(json['timings']) : null;
+    json['timings'] != null ? Timings.fromJson(json['timings']) : null;
     date = json['date'] != null ? Date.fromJson(json['date']) : null;
     meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
   }
@@ -68,13 +68,13 @@ class Meta {
 
   Meta(
       {this.latitude,
-      this.longitude,
-      this.timezone,
-      this.method,
-      this.latitudeAdjustmentMethod,
-      this.midnightMode,
-      this.school,
-      this.offset});
+        this.longitude,
+        this.timezone,
+        this.method,
+        this.latitudeAdjustmentMethod,
+        this.midnightMode,
+        this.school,
+        this.offset});
 
   Meta.fromJson(Map<String, dynamic> json) {
     latitude = json['latitude'];
@@ -118,7 +118,7 @@ class Method {
     name = json['name'];
     params = json['params'] != null ? Params.fromJson(json['params']) : null;
     location =
-        json['location'] != null ? LocationModel.fromJson(json['location']) : null;
+    json['location'] != null ? LocationModel.fromJson(json['location']) : null;
   }
 
   Map<String, dynamic> toJson() {

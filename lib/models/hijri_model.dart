@@ -18,7 +18,7 @@ class Hijri {
     format = json["format"];
     day = json["day"];
     weekday =
-        json["weekday"] == null ? null : Weekday.fromJson(json["weekday"]);
+    json["weekday"] == null ? null : Weekday.fromJson(json["weekday"]);
     month = json["month"] == null ? null : Month.fromJson(json["month"]);
     year = json["year"];
   }

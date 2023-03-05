@@ -1,20 +1,18 @@
 import 'dart:async';
-
-import 'package:Betal/models/location_model.dart';
 import 'package:Betal/models/prayer_data_model.dart';
-import 'package:Betal/models/timing.dart';
 import 'package:Betal/modules/calendar_screen/calender_screen.dart';
 import 'package:Betal/modules/nearest_masjed_screen/nearest_masjed_screen.dart';
 import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
-import 'package:Betal/shared/data/cache_helper.dart';
+import 'package:Betal/shared/data/local_storage/controller/cache_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 
 class MainCubit extends Cubit<MainState> {
   MainCubit() : super(MainLayoutInitializeState());
@@ -84,7 +82,6 @@ class MainCubit extends Cubit<MainState> {
       },
     ).then((value) {
       prayerDataModel = PrayerDataModel.fromJson(value.data);
-      // timingsList.add(value.data);
       print(value);
       emit(GetTimeWithCitySuccessState());
     }).catchError((error) {
@@ -93,55 +90,25 @@ class MainCubit extends Cubit<MainState> {
     });
   }
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+  String selectedLanguage = 'en';
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+  void changeLanguage(String? fromShared) {
+    if (fromShared != null) {
+      selectedLanguage = fromShared;
+    } else {
+      CacheHelper.saveData(key: 'language', value: selectedLanguage);
+      emit(ChangeLanguageSuccessState());
     }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    return await Geolocator.getCurrentPosition();
   }
 
-  Placemark? placeMark_;
+  bool isExpansionTileOpen = true;
 
-  Future<void> getAddressFromLatLong(Position position) async {
-    List<Placemark> placeMark =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-    placeMark_ = placeMark[0];
-    city = placeMark_!.locality;
-    country = placeMark_!.country;
-    CacheHelper.saveData(key: 'city', value: placeMark_!.locality);
-    CacheHelper.saveData(key: 'country', value: placeMark_!.country);
-  }
-
-  Future getAddressName() async {
-    Position position = await _determinePosition();
-    getAddressFromLatLong(position);
-    // city = CacheHelper.getData(key: 'city');
-    // country = CacheHelper.getData(key: 'country');
+  void changeExpansionTileIcon(isOpened) {
+    isExpansionTileOpen = !isOpened;
+    emit(ExpansionTileIconChangedState());
   }
 
   bool isOpen = true;
-
-  // void changeExpansionTileIcon(isOpened) {
-  //   isOpen = !isOpened;
-  //   emit(ExpansionTileIconChangedState());
-  // }
 
   void changeNotificationIcon() {
     isOpen = !isOpen;

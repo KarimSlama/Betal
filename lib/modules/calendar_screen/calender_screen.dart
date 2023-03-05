@@ -4,6 +4,7 @@ import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:hijri_picker/hijri_picker.dart';
+import 'package:intl/intl.dart';
 
 class CalenderScreen extends StatefulWidget {
   const CalenderScreen({Key? key}) : super(key: key);
@@ -101,7 +102,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.fajr}',
+                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.fajr}',
                   style: const TextStyle(
                     fontSize: 16.0,
                   ),
@@ -122,7 +123,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.sunrise}',
+                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.sunrise}',
                   style: const TextStyle(
                     fontSize: 16.0,
                   ),
@@ -143,7 +144,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.dhuhr}',
+                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.dhuhr}',
                   style: const TextStyle(
                     fontSize: 16.0,
                   ),
@@ -164,7 +165,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.asr}',
+                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.asr}',
                   style: const TextStyle(
                     fontSize: 16.0,
                   ),
@@ -185,7 +186,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.maghrib}',
+                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.maghrib}',
                   style: const TextStyle(
                     fontSize: 16.0,
                   ),
@@ -206,7 +207,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.isha}',
+                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.isha}',
                   style: const TextStyle(
                     fontSize: 16.0,
                   ),
