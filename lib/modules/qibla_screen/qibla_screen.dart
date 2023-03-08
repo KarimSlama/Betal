@@ -24,7 +24,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
         builder: (_, AsyncSnapshot<bool?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: Text('loading'),
             );
           }
           if (snapshot.hasError) {

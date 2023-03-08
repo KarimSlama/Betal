@@ -1,4 +1,4 @@
-const Map<String, String> ar = {
+const Map<String, String> Arabic = {
   "Prayer Time": "مواقيت الصلاة",
   "Prayer": "الصلوات",
   "Ability to manage daily prayer alerts.":
@@ -30,4 +30,26 @@ const Map<String, String> ar = {
   "hr": "س",
   "min": "د",
   "sec": "ث",
+  "hr: min: sec": "س : د : ث",
+  "Saturday": "السبت",
+  "Sunday": "الأحد",
+  "Monday": "الأثنين",
+  "Tuesday": "الثلاثاء",
+  "Wednesday": "الأربعاء",
+  "Thursday": "الخميس",
+  "Friday": "الجمعة",
+  "Location": "الموقع",
+  "Location Permission": "صلاحية استخدام الموقع",
+  "Hijri": "التقويم الهجري",
+  "Gregorian": "التقويم العربي",
+  "Languages": "اللغات",
+  "Calculation Method": "طريقة حساب الوقت",
+  "Shafi": "المذهب الشافعي",
+  "Hanafi": "المذهب الحنفي",
+  "Estimate Method Automatically": "طريقة التقدير تلقائيًا",
+  "dark mode": "الوضح الليلي",
+  "24 Clock System": "نظام 24 ساعة",
+  "Notify With Sound": "الإخطار بالصوت",
+  "Alert Only": "التنبيه فقط",
+  "OFF": "إيقاف",
 };

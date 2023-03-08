@@ -1,11 +1,10 @@
 import 'package:Betal/layouts/mainLayout.dart';
+import 'package:Betal/main.dart';
 import 'package:Betal/shared/components/components.dart';
-import 'package:Betal/shared/data/local_storage/controller/app_language.dart';
-import 'package:Betal/shared/data/local_storage/controller/cache_helper.dart';
+import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -45,7 +44,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   ];
 
   bool isLast = false;
-  String selectedLanguage = 'en';
+  String selectedLanguage = 'English';
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +58,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           child: DropdownButton(
             items: [
               DropdownMenuItem(
-                value: 'en',
+                value: 'English',
                 child: Row(
                   children: [
                     const Text('En'),
@@ -76,7 +75,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'fr',
+                value: 'French',
                 child: Row(
                   children: [
                     const Text('Fr'),
@@ -93,7 +92,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'ar',
+                value: 'Arabic',
                 child: Row(
                   children: [
                     const Text('ع'),
@@ -110,7 +109,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'tr',
+                value: 'Turkish',
                 child: Row(
                   children: [
                     const Text('Tr'),
@@ -127,7 +126,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'de',
+                value: 'German',
                 child: Row(
                   children: [
                     const Text('De'),
@@ -144,7 +143,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'es',
+                value: 'Spanish',
                 child: Row(
                   children: [
                     const Text('Es'),
@@ -161,7 +160,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'pt',
+                value: 'Portuguese',
                 child: Row(
                   children: [
                     const Text('Pt'),
@@ -178,7 +177,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               DropdownMenuItem(
-                value: 'ru',
+                value: 'Russian',
                 child: Row(
                   children: [
                     const Text('Ru'),
@@ -198,7 +197,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             value: selectedLanguage,
             onChanged: (value) {
               setState(() {
-                if(value != null) selectedLanguage = value;
+                if (value != null) selectedLanguage = value;
               });
               Get.updateLocale(Locale(selectedLanguage));
             },
@@ -254,9 +253,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             child: MaterialButton(
               onPressed: () {
                 if (isLast) {
-                  CacheHelper.saveData(
-                      key: 'language', value: selectedLanguage);
-                  submit();
+                  CacheHelper.saveData(key: 'language', value: selectedLanguage)
+                      .then((value) {
+                    print('success saved language');
+                    submit();
+                  });
                 }
                 pageController.nextPage(
                     duration: const Duration(seconds: 1),

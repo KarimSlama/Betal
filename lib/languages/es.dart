@@ -1,4 +1,4 @@
-const Map<String, String> es = {
+const Map<String, String> Spanish = {
   "Prayer Time": "Tiempo de Oración",
   "Prayer": "Oraciones",
   "Ability to manage daily prayer alerts.":
@@ -23,8 +23,15 @@ const Map<String, String> es = {
   "UPCOMING": "PEÓXIMOs",
   "Prayers": "Oraciones",
   "Qiblah": "Alquibla",
-  "Location": "Location",
+  "Nearest": "cercana",
   "Calendar": "Calendario",
   "Setting": "Ajuste",
   "Notification": "Notificaciones",
+  "Saturday": "Sábado",
+  "Sunday": "Domingo",
+  "Monday": "Lunes",
+  "Tuesday": "Martes",
+  "Wednesday": "Miércoles",
+  "Thursday": "Jueves",
+  "Friday": "Viernes",
 };

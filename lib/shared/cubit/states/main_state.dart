@@ -18,6 +18,12 @@ class GetTimeWithCitySuccessState extends MainState {}
 
 class GetTimeWithCityErrorState extends MainState {}
 
+class DataWithDayLoadingState extends MainState {}
+
+class DataWithDaySuccessState extends MainState {}
+
+class DataWithDayErrorState extends MainState {}
+
 class ChangeLanguageSuccessState extends MainState {}
 
 class ExpansionTileIconChangedState extends MainState {}
@@ -25,3 +31,7 @@ class ExpansionTileIconChangedState extends MainState {}
 class NotificationIconChangedState extends MainState {}
 
 class SwitchIconChangedState extends MainState {}
+
+class PickAudioSuccessState extends MainState {}
+
+class PickAudioErrorState extends MainState {}

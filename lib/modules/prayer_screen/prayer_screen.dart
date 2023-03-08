@@ -1,11 +1,10 @@
-import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
+import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -19,9 +18,6 @@ class PrayerScreen extends StatelessWidget {
       builder: (context, state) {
         var prayer = MainCubit.getContext(context).prayerDataModel;
 
-        final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-            FlutterLocalNotificationsPlugin();
-
         TimeOfDay stringToTimeOfDay(String time) {
           final format = DateFormat.Hm();
           return TimeOfDay.fromDateTime(format.parse(time));
@@ -34,14 +30,6 @@ class PrayerScreen extends StatelessWidget {
         TimeOfDay maghrib = stringToTimeOfDay(prayer.data!.timings!.maghrib!);
         TimeOfDay isha = stringToTimeOfDay(prayer.data!.timings!.isha!);
 
-        if (currentDate.minute == isha.minute) {
-          NotificationModel.showNotification(
-              title: 'Maghrib prayer',
-              body: 'Maghrib prayer time get it on',
-              prayer: 'Maghrib',
-              flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin);
-        }
-
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
           child: Column(
@@ -53,9 +41,8 @@ class PrayerScreen extends StatelessWidget {
               Text(
                 'UPCOMING'.tr,
                 style: TextStyle(
-                    color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                currentDate.timeZoneOffset.inHours <= 12 ||
-                            currentDate.hour >= 19 && currentDate.hour <= 23)
+                    color: (currentDate.hour >= 16 &&
+                            currentDate.timeZoneOffset.inHours <= 5)
                         ? Colors.white
                         : Colors.black,
                     fontSize: 16,
@@ -64,58 +51,63 @@ class PrayerScreen extends StatelessWidget {
               const SizedBox(
                 height: 16.0,
               ),
-              if (fajr.hour < isha.hour || fajr.hour < sunrise.hour) ...[
+              if (fajr.hour < isha.hour &&
+                  fajr.hour > sunrise.hour &&
+                  fajr.hour < dhuhr.hour) ...[
                 Text(
                   'Fajr'.tr,
                   style: TextStyle(
-                      color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                  currentDate.timeZoneOffset.inHours <= 12 ||
-                              currentDate.hour >= 19 && currentDate.hour <= 23)
+                      color: (currentDate.hour >= 16 &&
+                              currentDate.timeZoneOffset.inHours <= 5)
                           ? Colors.white
                           : Colors.black,
                       fontSize: 24,
                       fontWeight: FontWeight.w500),
                 ),
-              ] else if (dhuhr.hour > sunrise.hour) ...[
+              ] else if (dhuhr.hourOfPeriod > sunrise.hourOfPeriod &&
+                  dhuhr.hour > sunrise.hour &&
+                  dhuhr.hour > asr.hour &&
+                  dhuhr.hourOfPeriod > asr.hourOfPeriod) ...[
                 Text('Dhuhr'.tr,
                     style: TextStyle(
-                        color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                    currentDate.timeZoneOffset.inHours <= 12 ||
-                                currentDate.hour >= 19 &&
-                                    currentDate.hour <= 23)
+                        color: (currentDate.hour >= 16 &&
+                                currentDate.timeZoneOffset.inHours <= 5)
                             ? Colors.white
                             : Colors.black,
                         fontSize: 24,
                         fontWeight: FontWeight.w500))
-              ] else if (asr.hour > dhuhr.hour) ...[
+              ] else if (currentDate.hour > dhuhr.hour &&
+                  currentDate.hour <= asr.hour &&
+                  currentDate.timeZoneOffset.inHours > dhuhr.periodOffset &&
+                  currentDate.timeZoneOffset.inHours <= asr.periodOffset) ...[
                 Text('Asr'.tr,
                     style: TextStyle(
-                        color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                    currentDate.timeZoneOffset.inHours <= 12 ||
-                                currentDate.hour >= 19 &&
-                                    currentDate.hour <= 23)
+                        color: (currentDate.hour >= 16 &&
+                                currentDate.timeZoneOffset.inHours <= 5)
                             ? Colors.white
                             : Colors.black,
                         fontSize: 24,
                         fontWeight: FontWeight.w500)),
-              ] else if (maghrib.hour > asr.hour) ...[
+              ] else if (maghrib.hourOfPeriod > asr.hourOfPeriod &&
+                  maghrib.hour > asr.hour &&
+                  maghrib.hour < isha.hour &&
+                  maghrib.hourOfPeriod < isha.hourOfPeriod) ...[
                 Text('Maghrib'.tr,
                     style: TextStyle(
-                        color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                    currentDate.timeZoneOffset.inHours <= 12 ||
-                                currentDate.hour >= 19 &&
-                                    currentDate.hour <= 23)
+                        color: (currentDate.hour >= 16 &&
+                                currentDate.timeZoneOffset.inHours <= 5)
                             ? Colors.white
                             : Colors.black,
                         fontSize: 24,
                         fontWeight: FontWeight.w500)),
-              ] else if (isha.hour > maghrib.hour && isha.hour > fajr.hour) ...[
+              ] else if (isha.hourOfPeriod > maghrib.hourOfPeriod &&
+                  isha.hour > maghrib.hour &&
+                  isha.hour < fajr.hour &&
+                  isha.hourOfPeriod < fajr.hourOfPeriod) ...[
                 Text('Isha'.tr,
                     style: TextStyle(
-                        color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                    currentDate.timeZoneOffset.inHours <= 12 ||
-                                currentDate.hour >= 19 &&
-                                    currentDate.hour <= 23)
+                        color: (currentDate.hour >= 16 &&
+                                currentDate.timeZoneOffset.inHours <= 5)
                             ? Colors.white
                             : Colors.black,
                         fontSize: 24,
@@ -134,11 +126,12 @@ class PrayerScreen extends StatelessWidget {
                 height: 340.0,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadiusDirectional.circular(30.0),
-                    color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                                currentDate.timeZoneOffset.inHours <= 12 ||
-                            currentDate.hour >= 19 && currentDate.hour <= 23)
-                        ? azanBoxColor.withOpacity(.6)
-                        : Colors.white),
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? (currentDate.hour >= 16 &&
+                                currentDate.timeZoneOffset.inHours <= 5)
+                            ? azanBoxColor.withOpacity(.6)
+                            : Colors.white
+                        : Colors.black.withOpacity(.5)),
                 child: buildPrayerList(context),
               ),
             ],
@@ -159,11 +152,10 @@ class PrayerScreen extends StatelessWidget {
       '$hours hr:$minutes min:$seconds sec'.tr,
       style: TextStyle(
         fontSize: 20.0,
-        color: (currentDate.timeZoneOffset.inHours >= 7 &&
-                    currentDate.timeZoneOffset.inHours <= 12 ||
-                currentDate.hour >= 19 && currentDate.hour <= 23)
-            ? Colors.white
-            : Colors.black,
+        color:
+            (currentDate.hour >= 16 && currentDate.timeZoneOffset.inHours <= 5)
+                ? Colors.white
+                : Colors.black,
       ),
     );
   }
@@ -231,16 +223,22 @@ class PrayerScreen extends StatelessWidget {
                 const SizedBox(
                   width: 12.0,
                 ),
-                const Text(
-                  'Fajr',
+                Text(
+                  'Fajr'.tr,
                   style: TextStyle(
                     fontSize: 16.0,
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.fajr}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -266,16 +264,22 @@ class PrayerScreen extends StatelessWidget {
                 const SizedBox(
                   width: 12.0,
                 ),
-                const Text(
-                  'Sunrise',
+                Text(
+                  'Sunrise'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.sunrise}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -298,16 +302,22 @@ class PrayerScreen extends StatelessWidget {
                 const SizedBox(
                   width: 12.0,
                 ),
-                const Text(
-                  'Dhuhr',
+                Text(
+                  'Dhuhr'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.dhuhr}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -330,16 +340,22 @@ class PrayerScreen extends StatelessWidget {
                 const SizedBox(
                   width: 12.0,
                 ),
-                const Text(
-                  'Asr',
+                Text(
+                  'Asr'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.asr}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -362,16 +378,22 @@ class PrayerScreen extends StatelessWidget {
                 const SizedBox(
                   width: 12.0,
                 ),
-                const Text(
-                  'Maghrib',
+                Text(
+                  'Maghrib'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.maghrib}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -394,16 +416,22 @@ class PrayerScreen extends StatelessWidget {
                 const SizedBox(
                   width: 12.0,
                 ),
-                const Text(
-                  'Isha',
+                Text(
+                  'Isha'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.isha}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),

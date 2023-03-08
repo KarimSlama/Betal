@@ -1,5 +1,5 @@
-const Map<String, String> ru = {
-  "Prayer Time": "Молитвенное время",
+const Map<String, String> Russian = {
+  "Prayer Time": "Молитвенное Bремя",
   "Prayer": "молитвы",
   "Ability to manage daily prayer alerts.":
       "Возможность управлять ежедневными молитвенными оповещениями.",
@@ -23,8 +23,15 @@ const Map<String, String> ru = {
   "UPCOMING": "предстоящиЕ",
   "Prayers": "Молитвы",
   "Qiblah": "Кибла",
-  "Location": "Расположение",
+  "Nearest": "ближайший",
   "Calendar": "Kалендарь",
   "Setting": "Параметр",
   "Notification": "Уведомления",
+  "Saturday": "Cуббота",
+  "Sunday": "Воскресенье",
+  "Monday": "Понедельник",
+  "Tuesday": "Вторник",
+  "Wednesday": "Cреда",
+  "Thursday": "Четверг",
+  "Friday": "Пятница",
 };

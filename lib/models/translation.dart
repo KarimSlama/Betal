@@ -11,13 +11,13 @@ import 'package:get/get.dart';
 class Translation extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
-        'en': en,
-        'ar': ar,
-        'fr': fr,
-        'de': de,
-        'tr': tr,
-        'es': es,
-        'pt': pt,
-        'ru': ru,
+        'English': English,
+        'Arabic': Arabic,
+        'French': French,
+        'German': German,
+        'Turkish': Turkish,
+        'Spanish': Spanish,
+        'Portuguese': Portuguese,
+        'Russian': Russian,
       };
 }

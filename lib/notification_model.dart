@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationModel {
@@ -12,11 +11,10 @@ class NotificationModel {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  static Future<Widget?> showNotification(
+  static Future showNotification(
       {var id = 0,
       required String title,
       required String body,
-      var payload,
       required String prayer,
       required FlutterLocalNotificationsPlugin
           flutterLocalNotificationsPlugin}) async {

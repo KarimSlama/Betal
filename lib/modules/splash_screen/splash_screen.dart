@@ -1,12 +1,9 @@
 import 'package:Betal/layouts/mainLayout.dart';
 import 'package:Betal/modules/onboarding_screen/onboarding_screen.dart';
-import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
-import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
-import 'package:Betal/shared/data/local_storage/controller/cache_helper.dart';
+import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -108,6 +105,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> getAddressFromLatLong(Position position) async {
     List<Placemark> placeMark =
         await placemarkFromCoordinates(position.latitude, position.longitude);
+    latitude = position.latitude;
+    longitude = position.longitude;
+    CacheHelper.saveData(key: 'latitude', value: position.latitude);
+    CacheHelper.saveData(key: 'longitude', value: position.longitude);
     placeMark_ = placeMark[0];
     city = placeMark_!.locality;
     country = placeMark_!.country;

@@ -1,9 +1,13 @@
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
+import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:hijri_picker/hijri_picker.dart';
+import 'package:Betal/models/date_utils_model.dart' as date_util;
 import 'package:intl/intl.dart';
 
 class CalenderScreen extends StatefulWidget {
@@ -12,8 +16,6 @@ class CalenderScreen extends StatefulWidget {
   @override
   State<CalenderScreen> createState() => _CalenderScreenState();
 }
-
-var selectedDay = HijriCalendar.now();
 
 class _CalenderScreenState extends State<CalenderScreen> {
   @override
@@ -32,10 +34,12 @@ class _CalenderScreenState extends State<CalenderScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
-                color: (currentDate.timeZoneOffset.inHours > 5 &&
-                        currentDate.hour >= 20)
-                    ? azanBoxColor
-                    : Colors.white.withOpacity(.6)),
+                color: ModeCubit.getContext(context).isDark == true
+                    ? (currentDate.hour >= 16 &&
+                            currentDate.timeZoneOffset.inHours <= 5)
+                        ? azanBoxColor.withOpacity(.6)
+                        : Colors.white
+                    : Colors.black.withOpacity(.5)),
             padding: const EdgeInsetsDirectional.symmetric(
                 vertical: 16.0, horizontal: 14.0),
             child: Row(
@@ -47,7 +51,15 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 const SizedBox(
                   width: 15.0,
                 ),
-                Text('$selectedDay'),
+                Text(
+                  '$selectedHijriDay',
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
+                    fontSize: 16.0,
+                  ),
+                ),
               ],
             ),
           ),
@@ -55,55 +67,156 @@ class _CalenderScreenState extends State<CalenderScreen> {
         const SizedBox(
           height: 20.0,
         ),
-        SizedBox(
-          height: 60,
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) => buildCalendarSelectItem(),
-            itemCount: 7,
-            separatorBuilder: (context, index) => const SizedBox(
-              width: 10.0,
-            ),
-          ),
-        ),
+        horizontalCapsuleListView(),
         const SizedBox(
-          height: 40.0,
+          height: 28.0,
         ),
         Container(
           padding: const EdgeInsetsDirectional.symmetric(
               horizontal: 18.0, vertical: 14.0),
-          height: 320.0,
+          height: 340.0,
           decoration: BoxDecoration(
-            borderRadius: BorderRadiusDirectional.circular(30.0),
-            color: (currentDate.timeZoneOffset.inHours < 5 &&
-                    currentDate.hour > 20)
-                ? azanBoxColor.withOpacity(.6)
-                : Colors.white,
+              borderRadius: BorderRadiusDirectional.circular(30.0),
+              color: ModeCubit.getContext(context).isDark == true
+                  ? (currentDate.hour >= 16 &&
+                          currentDate.timeZoneOffset.inHours <= 5)
+                      ? azanBoxColor.withOpacity(.6)
+                      : Colors.white
+                  : Colors.black.withOpacity(.5)),
+          child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) => buildPrayerList(context, index),
+            itemCount: 1,
           ),
-          child: buildPrayerList(context),
         ),
       ],
     );
   }
 
-  Widget buildPrayerList(context) => Column(
+  late ScrollController scrollController;
+  List<DateTime> currentMonthList = List.empty();
+  var selectedDay;
+
+  late String formattedDate;
+
+  @override
+  void initState() {
+    currentMonthList = date_util.DateUtils.daysInMonth(currentDate);
+    currentMonthList.sort((a, b) => a.day.compareTo(b.day));
+    currentMonthList = currentMonthList.toSet().toList();
+    scrollController =
+        ScrollController(initialScrollOffset: 70.0 * currentDate.day);
+    selectedDay = currentDate;
+    formattedDate = DateFormat('dd-MM-yyyy').format(selectedDay);
+    // print(formattedDate);
+    super.initState();
+  }
+
+  Widget capsuleView(int index) {
+    return Padding(
+        padding:
+            const EdgeInsetsDirectional.symmetric(horizontal: 6, vertical: 4),
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              currentDate = currentMonthList[index];
+              formattedDate = DateFormat('dd-MM-yyyy').format(currentDate);
+              selectedDay = formattedDate;
+            });
+          },
+          child: Container(
+            width: 40.0,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: (currentMonthList[index].day != currentDate.day)
+                      ? [
+                          Colors.white.withOpacity(0.8),
+                          Colors.white.withOpacity(0.7),
+                          Colors.white.withOpacity(0.6)
+                        ]
+                      : [
+                          const Color(0xff5AE52A),
+                          const Color(0xff5AE52A),
+                          const Color(0xff5AE52A),
+                        ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(0.0, 1.0),
+                  stops: const [0.0, 0.5, 1.0],
+                  tileMode: TileMode.clamp),
+              borderRadius: BorderRadiusDirectional.circular(10),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    date_util.DateUtils
+                        .weekdays[currentMonthList[index].weekday - 1].tr,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: (currentMonthList[index].day != currentDate.day)
+                            ? HexColor("465876")
+                            : Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  Text(
+                    currentMonthList[index].day.toString(),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: (currentMonthList[index].day != currentDate.day)
+                            ? HexColor("465876")
+                            : Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+
+  Widget horizontalCapsuleListView() {
+    return Container(
+      height: 80,
+      child: ListView.builder(
+        controller: scrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const ClampingScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: currentMonthList.length,
+        itemBuilder: (context, index) {
+          return capsuleView(index);
+        },
+      ),
+    );
+  }
+
+  Widget buildPrayerList(context, index) => Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
             child: Row(
               children: [
-                const Text(
-                  'Fajr',
+                Text(
+                  'Fajr'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.fajr}',
-                  style: const TextStyle(
+                  '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.fajr}',
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -112,19 +225,25 @@ class _CalenderScreenState extends State<CalenderScreen> {
           ),
           divider(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
             child: Row(
               children: [
-                const Text(
-                  'Sunrise',
+                Text(
+                  'Sunrise'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.sunrise}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -133,19 +252,25 @@ class _CalenderScreenState extends State<CalenderScreen> {
           ),
           divider(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
             child: Row(
               children: [
-                const Text(
-                  'Dhuhr',
+                Text(
+                  'Dhuhr'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.dhuhr}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -154,19 +279,25 @@ class _CalenderScreenState extends State<CalenderScreen> {
           ),
           divider(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
             child: Row(
               children: [
-                const Text(
-                  'Asr',
+                Text(
+                  'Asr'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.asr}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -175,19 +306,25 @@ class _CalenderScreenState extends State<CalenderScreen> {
           ),
           divider(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
             child: Row(
               children: [
-                const Text(
-                  'Maghrib',
+                Text(
+                  'Maghrib'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.maghrib}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -196,19 +333,25 @@ class _CalenderScreenState extends State<CalenderScreen> {
           ),
           divider(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
             child: Row(
               children: [
-                const Text(
-                  'Isha',
+                Text(
+                  'Isha'.tr,
                   style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.isha}',
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: ModeCubit.getContext(context).isDark == true
+                        ? Colors.black
+                        : Colors.white.withOpacity(.7),
                     fontSize: 16.0,
                   ),
                 ),
@@ -221,48 +364,21 @@ class _CalenderScreenState extends State<CalenderScreen> {
   Future<void> selectDate(context) async {
     final HijriCalendar? picked = await showHijriDatePicker(
       context: context,
-      initialDate: selectedDay,
+      initialDate: selectedHijriDay,
       lastDate: HijriCalendar()
         ..hYear = 1445
         ..hMonth = 9
         ..hDay = 25,
       firstDate: HijriCalendar()
-        ..hYear = 1438
+        ..hYear = 1430
         ..hMonth = 12
         ..hDay = 25,
       initialDatePickerMode: DatePickerMode.day,
     );
     if (picked != null) {
       setState(() {
-        selectedDay = picked;
+        selectedHijriDay = picked;
       });
     }
   }
 }
-
-Widget buildCalendarSelectItem() => Container(
-      alignment: Alignment.center,
-      padding:
-          const EdgeInsetsDirectional.symmetric(horizontal: 6, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadiusDirectional.circular(10),
-        color: Colors.white,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Text(
-            'Thu',
-            style: TextStyle(fontSize: 16.0),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          Text(
-            '3',
-            style: TextStyle(fontSize: 16.0),
-          ),
-        ],
-      ),
-    );

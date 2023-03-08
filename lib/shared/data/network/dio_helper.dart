@@ -12,7 +12,7 @@ class DioHelper {
     );
   } //end init()
 
-  static Future<Response> getData({
+    static Future<Response> getData({
     required String url,
     Map<String, dynamic>? query,
   }) async {
