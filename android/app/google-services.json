@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "283662288639",
+    "project_id": "battal-f5e02",
+    "storage_bucket": "battal-f5e02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283662288639:android:827ba05922dfead0456eca",
+        "android_client_info": {
+          "package_name": "com.example.battal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "283662288639-33sg1ok2j3p6icef18l4bopjg0n0k52l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.battal",
+            "certificate_hash": "bba192b432be9a4a1db192c5bc1aad428a9136fa"
+          }
+        },
+        {
+          "client_id": "283662288639-1vodl1gt8858k6v046qbc05ogpi3sa3b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjMaegpbFScQMCissqnrnRFaOdPr64USc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "283662288639-1vodl1gt8858k6v046qbc05ogpi3sa3b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "283662288639-7svnp74i77uf9njoqci0ev7ne0t0pebb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.battal-app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

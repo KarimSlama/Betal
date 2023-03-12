@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future navigateToHome() async {
     await Future.delayed(const Duration(seconds: 2), () {
       if (isBoarding != null) {
-        widget = const MainLayout();
+        widget = MainLayout();
       } else {
         widget = const OnBoardingScreen();
       }

@@ -52,4 +52,7 @@ const Map<String, String> English = {
   "Notify With Sound": "Notify With Sound",
   "Alert Only": "Alert Only",
   "OFF": "OFF",
+  "enter prayer name":"enter payer name",
+  "Add Prayer":"Add Prayer",
+  "prayer name is important": "prayer name is important",
 };

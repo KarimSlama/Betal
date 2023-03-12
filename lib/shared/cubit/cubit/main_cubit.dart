@@ -4,14 +4,17 @@ import 'package:Betal/models/calendar_time_model.dart';
 import 'package:Betal/models/data_with_day_model.dart';
 import 'package:Betal/models/prayer_data_model.dart';
 import 'package:Betal/modules/calendar_screen/calender_screen.dart';
-import 'package:Betal/modules/nearest_masjed_screen/nearest_masjed_screen.dart';
 import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
+import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
+import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class MainCubit extends Cubit<MainState> {
   MainCubit() : super(MainLayoutInitializeState());
@@ -21,9 +24,8 @@ class MainCubit extends Cubit<MainState> {
   int currentIndex = 0;
 
   List<Widget> screens = [
-    const PrayerScreen(),
+    PrayerScreen(),
     const QiblaScreen(),
-    const NearestMasjedScreen(),
     const CalenderScreen(),
   ];
 
@@ -95,12 +97,11 @@ class MainCubit extends Cubit<MainState> {
 
   CalendarTimeModel? calendarTimeModel;
 
-  void getTimeWithCalendar(
-      {required String month, required String city, required String country}) {
+  void getTimeWithCalendar({required String city, required String country}) {
     emit(GetTimeWithCityLoadingState());
 
     DioHelper.getData(
-      url: 'calendarByCity/2023/$month',
+      url: 'timingsByCity/',
       query: {
         'city': city,
         'country': country,
@@ -118,16 +119,14 @@ class MainCubit extends Cubit<MainState> {
 
   DataWithDayModel? dataWithDayModel;
 
-  void dayWithDate(
-      {required String date,
-      required double latitude,
-      required double longitude}) {
-    emit(DataWithDayLoadingState());
-
+  void getDayWithDate({
+    required String date,
+    required double latitude,
+    required double longitude,
+  }) {
     DioHelper.getData(
-      url: 'timings',
+      url: 'timings/$date',
       query: {
-        'date': date,
         'latitude': latitude,
         'longitude': longitude,
         'method': 8,
@@ -135,15 +134,11 @@ class MainCubit extends Cubit<MainState> {
     ).then((value) {
       dataWithDayModel = DataWithDayModel.fromJson(value.data);
       print(value);
-      emit(DataWithDaySuccessState());
     }).catchError((error) {
       print('Get Data error is: $error');
       emit(DataWithDayErrorState());
     });
   }
-
-  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  // FlutterLocalNotificationsPlugin();
 
   bool isExpansionTileOpen = true;
 
@@ -152,7 +147,7 @@ class MainCubit extends Cubit<MainState> {
     emit(ExpansionTileIconChangedState());
   }
 
-  bool isOpen = true;
+  bool isOpen = false;
 
   void changeNotificationIcon() {
     isOpen = !isOpen;
@@ -166,17 +161,57 @@ class MainCubit extends Cubit<MainState> {
     emit(SwitchIconChangedState());
   }
 
+  late Database database;
+
   FilePickerResult? result;
   File? file;
 
-  Future<void> chooseAudio() async {
+  Future chooseAudio() async {
     result = await FilePicker.platform.pickFiles(type: FileType.audio);
     if (result != null) {
       file = File(result!.files.single.path ?? '');
+      print('The audio path is: ${file?.path.toString()}');
       emit(PickAudioSuccessState());
     } else {
       print('error when open picker');
       emit(PickAudioErrorState());
     }
   }
+
+  insertIntoDatabase({
+    required var prayerName,
+    required var prayerPath,
+  }) async {
+    await database.transaction((transaction) {
+      return transaction
+          .rawInsert(
+              'INSERT INTO prayers(prayer_name, prayer_path) VALUES("$prayerName", "${file!.path}")')
+          .then((value) {
+        print('$value a new record inserted');
+        emit(PrayerInsertDatabaseState());
+        getAllData(database);
+      });
+    });
+  }
+
+  List<Map> prayersList = [];
+
+  void getAllData(database) {
+    prayersList = [];
+
+    emit(PrayersGetAllDatabaseLoadingState());
+    database.rawQuery('SELECT * FROM prayers').then((value) {
+      value.forEach((element) {
+        prayersList.add(element);
+      });
+      emit(PrayersGetAllDatabaseState());
+    });
+  } //end getAllData()
+
+  bool isBottomSheetShown = false;
+
+  void changeBottomSheetState(bool isShown) {
+    isBottomSheetShown = isShown;
+    emit(PrayersBottomSheetState());
+  } //end changeBottomSheetState()
 }

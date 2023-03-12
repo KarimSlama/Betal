@@ -48,4 +48,7 @@ const Map<String, String> Turkish = {
   "Notify With Sound": "Sesli bildir",
   "Alert Only": "Yalnızca Uyarı",
   "OFF": "Kapalı",
+  "enter prayer name": "oyuncu adını girin",
+  "Add Prayer": "Oyuncu Ekle",
+  "prayer name is important": "namaz i̇smi önemlidir",
 };

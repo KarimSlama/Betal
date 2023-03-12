@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math' show pi;
 
+import 'package:Betal/adaptive/adaptive_indicator.dart';
 import 'package:Betal/modules/qibla_screen/location_error_widget.dart';
+import 'package:Betal/shared/components/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -53,8 +55,8 @@ class _QiblahCompassState extends State<QiblahCompass> {
         stream: stream,
         builder: (context, AsyncSnapshot<LocationStatus> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Center(
+              child: AdaptiveIndicator(os: getOS()),
             );
           }
           if (snapshot.data!.enabled == true) {
@@ -103,8 +105,10 @@ class QiblahCompassWidget extends StatelessWidget {
       stream: FlutterQiblah.qiblahStream,
       builder: (_, AsyncSnapshot<QiblahDirection> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Center(
+            child: AdaptiveIndicator(
+              os: getOS(),
+            ),
           );
         }
 

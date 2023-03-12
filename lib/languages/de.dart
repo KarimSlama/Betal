@@ -48,4 +48,7 @@ const Map<String, String> German = {
   "Notify With Sound": "Mit Ton benachrichtigen",
   "Alert Only": "Benachrichtigung nur",
   "OFF": "NUR",
+  "enter prayer name": "Spielername eingeben",
+  "Add Prayer": "Spieler hinzufügen",
+  "prayer name is important": "Gebet Name ist wichtig",
 };

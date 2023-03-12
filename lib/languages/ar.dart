@@ -52,4 +52,7 @@ const Map<String, String> Arabic = {
   "Notify With Sound": "الإخطار بالصوت",
   "Alert Only": "التنبيه فقط",
   "OFF": "إيقاف",
+  "enter prayer name": "أدخل اسم المؤذن",
+  "Add Prayer": "إضافة المؤذن",
+  "prayer name is important": "اسم المؤذن مطلوب",
 };

@@ -33,20 +33,22 @@ class _CalenderScreenState extends State<CalenderScreen> {
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                color: ModeCubit.getContext(context).isDark == true
-                    ? (currentDate.hour >= 16 &&
-                            currentDate.timeZoneOffset.inHours <= 5)
-                        ? azanBoxColor.withOpacity(.6)
-                        : Colors.white
-                    : Colors.black.withOpacity(.5)),
+              borderRadius: BorderRadius.circular(10.0),
+              color: ModeCubit.getContext(context).isDark == true
+                  ? (currentDate.hour >= 20 && currentDate.hour <= 5)
+                  ? Colors.white
+                  : azanBoxColor.withOpacity(.6)
+                  : Colors.black.withOpacity(.5),
+            ),
             padding: const EdgeInsetsDirectional.symmetric(
                 vertical: 16.0, horizontal: 14.0),
             child: Row(
               children: [
                 Icon(
                   Icons.calendar_today,
-                  color: Colors.green.shade800,
+                  color: ModeCubit.getContext(context).isDark
+                      ? Colors.green.shade800
+                      : bottomIndicator,
                 ),
                 const SizedBox(
                   width: 15.0,
@@ -76,13 +78,13 @@ class _CalenderScreenState extends State<CalenderScreen> {
               horizontal: 18.0, vertical: 14.0),
           height: 340.0,
           decoration: BoxDecoration(
-              borderRadius: BorderRadiusDirectional.circular(30.0),
-              color: ModeCubit.getContext(context).isDark == true
-                  ? (currentDate.hour >= 16 &&
-                          currentDate.timeZoneOffset.inHours <= 5)
-                      ? azanBoxColor.withOpacity(.6)
-                      : Colors.white
-                  : Colors.black.withOpacity(.5)),
+            borderRadius: BorderRadiusDirectional.circular(30.0),
+            color: ModeCubit.getContext(context).isDark == true
+                ? (currentDate.hour >= 20 && currentDate.hour <= 5)
+                ? Colors.white
+                : azanBoxColor.withOpacity(.6)
+                : Colors.black.withOpacity(.5),
+          ),
           child: ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) => buildPrayerList(context, index),
@@ -95,9 +97,9 @@ class _CalenderScreenState extends State<CalenderScreen> {
 
   late ScrollController scrollController;
   List<DateTime> currentMonthList = List.empty();
-  var selectedDay;
 
-  late String formattedDate;
+  var selectedDay;
+  var formattedDate;
 
   @override
   void initState() {
@@ -108,7 +110,11 @@ class _CalenderScreenState extends State<CalenderScreen> {
         ScrollController(initialScrollOffset: 70.0 * currentDate.day);
     selectedDay = currentDate;
     formattedDate = DateFormat('dd-MM-yyyy').format(selectedDay);
-    // print(formattedDate);
+    MainCubit.getContext(context).getDayWithDate(
+      date: formattedDate,
+      latitude: latitude,
+      longitude: longitude,
+    );
     super.initState();
   }
 
@@ -120,8 +126,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
           onTap: () {
             setState(() {
               currentDate = currentMonthList[index];
-              formattedDate = DateFormat('dd-MM-yyyy').format(currentDate);
-              selectedDay = formattedDate;
+              selectedDay = currentDate;
+              formattedDate = DateFormat('dd-MM-yyyy').format(selectedDay);
+              print(formattedDate);
+              MainCubit.getContext(context).getDayWithDate(
+                date: formattedDate,
+                latitude: latitude,
+                longitude: longitude,
+              );
             });
           },
           child: Container(
@@ -212,7 +224,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.fajr}',
+                  MainCubit.getContext(context)
+                              .dataWithDayModel
+                              ?.data
+                              ?.timings
+                              ?.fajr !=
+                          null
+                      ? '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.fajr}'
+                      : '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.fajr}',
                   style: TextStyle(
                     color: ModeCubit.getContext(context).isDark == true
                         ? Colors.black
@@ -239,7 +258,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.sunrise}',
+                  MainCubit.getContext(context)
+                              .dataWithDayModel
+                              ?.data
+                              ?.timings
+                              ?.sunrise !=
+                          null
+                      ? '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.sunrise}'
+                      : '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.sunrise}',
                   style: TextStyle(
                     color: ModeCubit.getContext(context).isDark == true
                         ? Colors.black
@@ -266,7 +292,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.dhuhr}',
+                  MainCubit.getContext(context)
+                              .dataWithDayModel
+                              ?.data
+                              ?.timings
+                              ?.dhuhr !=
+                          null
+                      ? '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.dhuhr}'
+                      : '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.dhuhr}',
                   style: TextStyle(
                     color: ModeCubit.getContext(context).isDark == true
                         ? Colors.black
@@ -293,7 +326,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.asr}',
+                  MainCubit.getContext(context)
+                              .dataWithDayModel
+                              ?.data
+                              ?.timings
+                              ?.asr !=
+                          null
+                      ? '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.asr}'
+                      : '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.asr}',
                   style: TextStyle(
                     color: ModeCubit.getContext(context).isDark == true
                         ? Colors.black
@@ -320,7 +360,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.maghrib}',
+                  MainCubit.getContext(context)
+                              .dataWithDayModel
+                              ?.data
+                              ?.timings
+                              ?.maghrib !=
+                          null
+                      ? '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.maghrib}'
+                      : '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.maghrib}',
                   style: TextStyle(
                     color: ModeCubit.getContext(context).isDark == true
                         ? Colors.black
@@ -347,7 +394,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  '${MainCubit.getContext(context).prayerDataModel?.data?.timings?.isha}',
+                  MainCubit.getContext(context)
+                              .dataWithDayModel
+                              ?.data
+                              ?.timings
+                              ?.isha !=
+                          null
+                      ? '${MainCubit.getContext(context).dataWithDayModel?.data?.timings?.isha}'
+                      : '${MainCubit.getContext(context).prayerDataModel!.data!.timings!.isha}',
                   style: TextStyle(
                     color: ModeCubit.getContext(context).isDark == true
                         ? Colors.black

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>283662288639-areb3fbc53pc1es2ftr05u7482qcosqt.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.283662288639-areb3fbc53pc1es2ftr05u7482qcosqt</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>283662288639-33sg1ok2j3p6icef18l4bopjg0n0k52l.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCtNC6IsRZSkUwuMXRuv51Wr1-ENgmEb84</string>
+	<key>GCM_SENDER_ID</key>
+	<string>283662288639</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.battal</string>
+	<key>PROJECT_ID</key>
+	<string>battal-f5e02</string>
+	<key>STORAGE_BUCKET</key>
+	<string>battal-f5e02.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:283662288639:ios:e6c0af77e90d6ad1456eca</string>
+</dict>
+</plist>

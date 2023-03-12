@@ -48,4 +48,7 @@ const Map<String, String> French = {
   "Notify With Sound": "Notification sonore",
   "Alert Only": "Alerter uniquement",
   "OFF": "SUR",
+  "enter prayer name":"entrer le nom du joueur",
+  "Add Prayer":"Ajouter un lecteur",
+  "prayer name is important": "nom de prière est important",
 };

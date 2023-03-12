@@ -1,5 +1,6 @@
 import 'package:Betal/models/translation.dart';
 import 'package:Betal/modules/splash_screen/splash_screen.dart';
+import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
@@ -10,11 +11,16 @@ import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:Betal/styles/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
+  await NotificationService.initializeNotification();
   await CacheHelper.init();
   await DioHelper.init();
   latitude = CacheHelper.getData(key: 'latitude');
@@ -22,9 +28,10 @@ void main() async {
   city = CacheHelper.getData(key: 'city');
   country = CacheHelper.getData(key: 'country');
   bool? isDark = CacheHelper.getData(key: 'isDark');
-  selectedLanguage = CacheHelper.getData(key: 'language');
+  selectedCurrentLanguage = CacheHelper.getData(key: 'language');
+
   runApp(MyApp(
-    selectedLanguage: selectedLanguage,
+    selectedLanguage: selectedCurrentLanguage,
     isDark: isDark,
   ));
 }
@@ -55,7 +62,7 @@ class MyApp extends StatelessWidget {
             theme:
                 ModeCubit.getContext(context).isDark ? lightTheme : darkTheme,
             translations: Translation(),
-            locale: Locale(selectedLanguage ?? 'English'),
+            locale: Locale(selectedCurrentLanguage ?? 'English'),
             fallbackLocale: const Locale('English'),
             debugShowCheckedModeBanner: false,
           );

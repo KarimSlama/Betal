@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -14,8 +15,12 @@ var country;
 var latitude;
 var longitude;
 
-var selectedLanguage;
+var selectedCurrentLanguage;
 
 var currentDate = DateTime.now();
 var currentTimeFormatted = DateFormat('HH:mm').format(currentDate);
 var selectedHijriDay = HijriCalendar.now();
+
+String getOS() {
+  return Platform.operatingSystem;
+}

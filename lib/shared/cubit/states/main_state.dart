@@ -35,3 +35,11 @@ class SwitchIconChangedState extends MainState {}
 class PickAudioSuccessState extends MainState {}
 
 class PickAudioErrorState extends MainState {}
+
+class PrayerInsertDatabaseState extends MainState {}
+
+class PrayersGetAllDatabaseLoadingState extends MainState {}
+
+class PrayersGetAllDatabaseState extends MainState {}
+
+class PrayersBottomSheetState extends MainState {}

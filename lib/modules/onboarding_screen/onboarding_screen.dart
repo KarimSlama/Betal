@@ -1,6 +1,7 @@
 import 'package:Betal/layouts/mainLayout.dart';
 import 'package:Betal/main.dart';
 import 'package:Betal/shared/components/components.dart';
+import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -255,7 +256,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 if (isLast) {
                   CacheHelper.saveData(key: 'language', value: selectedLanguage)
                       .then((value) {
-                    print('success saved language');
+                    selectedCurrentLanguage = CacheHelper.getData(key: 'language');
                     submit();
                   });
                 }
@@ -280,7 +281,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   void submit() {
     CacheHelper.saveData(key: 'onBoarding', value: true).then((value) {
-      if (value!) navigateAndFinish(context, const MainLayout());
+      if (value!) navigateAndFinish(context, MainLayout());
     });
   }
 
