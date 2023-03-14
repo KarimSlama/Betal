@@ -8,11 +8,13 @@ import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
-import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -161,7 +163,8 @@ class MainCubit extends Cubit<MainState> {
     emit(SwitchIconChangedState());
   }
 
-  late Database database;
+  Database? database;
+  List<Map> prayersList = [];
 
   FilePickerResult? result;
   File? file;
@@ -170,6 +173,8 @@ class MainCubit extends Cubit<MainState> {
     result = await FilePicker.platform.pickFiles(type: FileType.audio);
     if (result != null) {
       file = File(result!.files.single.path ?? '');
+      Directory rawDirectory = await getRawDirectory();
+      await file?.copy("${rawDirectory.path}/${result?.files.single.name}");
       print('The audio path is: ${file?.path.toString()}');
       emit(PickAudioSuccessState());
     } else {
@@ -178,14 +183,76 @@ class MainCubit extends Cubit<MainState> {
     }
   }
 
+  Future<Directory> getRawDirectory() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    Directory rawDirectory = Directory("${directory.path}/app_flutter/raw");
+    if (!rawDirectory.existsSync()) {
+      rawDirectory.createSync(recursive: true);
+    }
+    return rawDirectory;
+  }
+
+  // Future<void> saveToRaw(fileName) async {
+  //   if (file != null && fileName != null) {
+  //     var directory = await getExternalStorageDirectory();
+  //     var directoryPath = directory!.path;
+  //     await Directory(directoryPath).create(recursive: true);
+  //
+  //     File newFile = File(directoryPath);
+  //     newFile.writeAsBytesSync(file!.readAsBytesSync());
+  //   }
+  // }
+
+  // Future<Directory> getApplicationDocumentsDirectory() async {
+  //   final String? path = await Platform.getApplicationDocumentsPath();
+  //   if (path == null) {
+  //     print('error with path');
+  //   }
+  //   return Directory(path!);
+  // }
+
+  // Future<void> setDefaultSound() async {
+  //   ByteData data = await rootBundle.load('assets/audio/ahmed_alnafis.mp3');
+  //   Directory directory = await getApplicationDocumentsDirectory();
+  //   String newPath = '${directory.path}/raw/';
+  //   await Directory(newPath).create(recursive: true);
+  //
+  //   File newFile = File('$newPath/ahmed_alnafis.mp3');
+  //   newFile.writeAsBytesSync(data.buffer.asUint8List());
+  // }
+
+  void createDatabase() {
+    openDatabase(
+      'prayer_call.db',
+      version: 1,
+      onCreate: (database, version) {
+        print('database created');
+        database
+            .execute(
+                'CREATE TABLE prayers (id INTEGER PRIMARY KEY, prayer_name TEXT, prayer_path TEXT)')
+            .then((value) {
+                  });
+      },
+      onOpen: (database) {
+        insertIntoDatabase(
+            prayerName: 'Ahmed Al nafis',
+            prayerPath: '/data/user/0/com.example.battal/cache/''file_picker/أذان يأخذك لعالم آخر _ A prayer call that takes you to another world(MP3_128K).mp3');
+        getAllData(database);
+        print('database opened');
+      },
+    ).then((value) {
+      database = value;
+    });
+  } //end createDatabase()
+
   insertIntoDatabase({
     required var prayerName,
     required var prayerPath,
   }) async {
-    await database.transaction((transaction) {
+    await database?.transaction((transaction) {
       return transaction
           .rawInsert(
-              'INSERT INTO prayers(prayer_name, prayer_path) VALUES("$prayerName", "${file!.path}")')
+              'INSERT INTO prayers(prayer_name, prayer_path) VALUES("$prayerName", "$prayerPath")')
           .then((value) {
         print('$value a new record inserted');
         emit(PrayerInsertDatabaseState());
@@ -194,8 +261,6 @@ class MainCubit extends Cubit<MainState> {
     });
   }
 
-  List<Map> prayersList = [];
-
   void getAllData(database) {
     prayersList = [];
 
@@ -203,6 +268,7 @@ class MainCubit extends Cubit<MainState> {
     database.rawQuery('SELECT * FROM prayers').then((value) {
       value.forEach((element) {
         prayersList.add(element);
+        print(element);
       });
       emit(PrayersGetAllDatabaseState());
     });

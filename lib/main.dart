@@ -14,13 +14,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
 void main() async {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
-  await NotificationService.initializeNotification();
+  await NotificationService.initializeNotification(
+      flutterLocalNotificationsPlugin);
   await CacheHelper.init();
   await DioHelper.init();
   latitude = CacheHelper.getData(key: 'latitude');
@@ -29,6 +29,8 @@ void main() async {
   country = CacheHelper.getData(key: 'country');
   bool? isDark = CacheHelper.getData(key: 'isDark');
   selectedCurrentLanguage = CacheHelper.getData(key: 'language');
+  selectedSound = CacheHelper.getData(key: 'prayer_call');
+  print(selectedSound);
 
   runApp(MyApp(
     selectedLanguage: selectedCurrentLanguage,
@@ -47,8 +49,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>
-              MainCubit()..getTimeWithCity(city: city, country: country),
+          create: (context) => MainCubit()
+            ..getTimeWithCity(city: city, country: country)
+            ..createDatabase(),
         ),
         BlocProvider(
           create: (context) => ModeCubit()..changeMode(fromShared: isDark),

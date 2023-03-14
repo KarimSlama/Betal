@@ -9,6 +9,7 @@ import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:Betal/styles/icon_broken.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -44,6 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         } // end if()
       },
       builder: (context, state) {
+        var prayers = MainCubit.getContext(context).prayersList;
         return Directionality(
           textDirection: selectedCurrentLanguage == 'Arabic'
               ? TextDirection.rtl
@@ -237,18 +239,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                           if (formKey
                                                               .currentState!
                                                               .validate()) {
-                                                            // MainCubit
-                                                            //         .getContext(
-                                                            //             context)
-                                                            //     .insertIntoDatabase(
-                                                            //   prayerName:
-                                                            //       prayerController
-                                                            //           .text,
-                                                            //   prayerPath: MainCubit
-                                                            //           .getContext(
-                                                            //               context)
-                                                            //       .file,
-                                                            // );
+                                                            MainCubit
+                                                                    .getContext(
+                                                                        context)
+                                                                .insertIntoDatabase(
+                                                              prayerName:
+                                                                  prayerController
+                                                                      .text,
+                                                              prayerPath: MainCubit
+                                                                      .getContext(
+                                                                          context)
+                                                                  .file,
+                                                            );
                                                           }
                                                         },
                                                         child: Text(
@@ -288,29 +290,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Colors.green.shade800)
                             : const Icon(Icons.arrow_forward_ios_outlined),
                         children: [
-                          Container(
-                            height: 300.0,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildPrayers(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: MainCubit.getContext(context)
-                                        .prayersList
-                                        .length,
-                                  ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) =>
+                                    buildPrayers(prayers[index], index),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(
+                                  height: 10.0,
                                 ),
-                              ],
-                            ),
+                                itemCount: MainCubit.getContext(context)
+                                    .prayersList
+                                    .length,
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -1070,17 +1066,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // List<String> prayers = [
-  //   'Ahmed Al nafis',
-  //   'Yousef Moaty',
-  // ];
-
-  Widget buildPrayers(index) => InkWell(
-        onTap: () {},
+  Widget buildPrayers(Map prayers, index) => InkWell(
+        onTap: () async {
+          selectedSound = prayers['prayer_path'];
+          CacheHelper.saveData(key: 'prayer_call', value: selectedSound);
+          selectedSound = CacheHelper.getData(key: 'prayer_call');
+          print(selectedSound);
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
           child: Text(
-            MainCubit.getContext(context).prayersList[index]['prayer_name'],
+            prayers['prayer_name'],
             style: TextStyle(
               color: ModeCubit.getContext(context).isDark == true
                   ? Colors.black

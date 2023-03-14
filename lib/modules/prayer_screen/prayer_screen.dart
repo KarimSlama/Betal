@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
@@ -9,6 +7,7 @@ import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -17,8 +16,6 @@ class PrayerScreen extends StatefulWidget {
 
   @override
   State<PrayerScreen> createState() => _PrayerScreenState();
-
-  static const countDownDuration = Duration(hours: 3, minutes: 0);
 }
 
 class _PrayerScreenState extends State<PrayerScreen> {
@@ -46,6 +43,42 @@ class _PrayerScreenState extends State<PrayerScreen> {
         asr = stringToTimeOfDay(prayer.data!.timings!.asr!);
         maghrib = stringToTimeOfDay(prayer.data!.timings!.maghrib!);
         isha = stringToTimeOfDay(prayer.data!.timings!.isha!);
+
+        List<TimeOfDay> prayerTimesTiming = [
+          stringToTimeOfDay(prayer.data!.timings!.fajr!),
+          stringToTimeOfDay(prayer.data!.timings!.sunrise!),
+          stringToTimeOfDay(prayer.data!.timings!.dhuhr!),
+          stringToTimeOfDay(prayer.data!.timings!.asr!),
+          stringToTimeOfDay(prayer.data!.timings!.maghrib!),
+          stringToTimeOfDay(prayer.data!.timings!.isha!),
+        ];
+
+        List<DateTime> prayerTimes = [];
+        DateTime now = DateTime.now();
+        for (int i = 0; i < prayerTimesTiming.length; i++) {
+          DateTime prayerTime = DateTime(now.year, now.month, now.day,
+              prayerTimesTiming[i].hour, prayerTimesTiming[i].minute);
+          prayerTimes.add(prayerTime);
+        }
+
+        DateTime upcomingPrayerTime(
+            DateTime currentDate, List<DateTime> prayerTimes) {
+          for (int i = 0; i < prayerTimes.length; i++) {
+            if (currentDate.isBefore(prayerTimes[i])) {
+              return prayerTimes[i];
+            }
+          }
+          // If the current time is after the last prayer time, return the next day's Fajr time
+          return prayerTimes[0].add(const Duration(days: 1));
+        }
+
+        NotificationService.showNotification(
+          title: '$upcomingLevelPrayer prayer',
+          body: '$upcomingLevelPrayer prayer time is coming',
+          flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
+          time: upcomingPrayerTime(currentDate, prayerTimes),
+        );
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
           child: Column(
@@ -78,7 +111,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                 ),
               ] else if (currentDate.hour >= fajr.hour &&
                       currentDate.hour < dhuhr.hour ||
-                  currentDate.minute == dhuhr.minute) ...[
+                  currentDate.minute <= dhuhr.minute) ...[
                 Text('Dhuhr'.tr,
                     style: TextStyle(
                         color: (currentDate.hour >= 20 || currentDate.hour <= 5)
@@ -87,8 +120,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         fontSize: 24,
                         fontWeight: FontWeight.w500))
               ] else if (currentDate.hour >= dhuhr.hour &&
-                      currentDate.hour < asr.hour ||
-                  currentDate.minute == asr.minute) ...[
+                  currentDate.hour <= asr.hour &&
+                  currentDate.minute <= asr.minute) ...[
                 Text('Asr'.tr,
                     style: TextStyle(
                         color: (currentDate.hour >= 20 || currentDate.hour <= 5)
@@ -97,8 +130,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         fontSize: 24,
                         fontWeight: FontWeight.w500)),
               ] else if (currentDate.hour >= asr.hour &&
-                      currentDate.hour < maghrib.hour ||
-                  currentDate.minute == maghrib.minute) ...[
+                      currentDate.hour <= maghrib.hour ||
+                  currentDate.minute <= maghrib.minute) ...[
                 Text(
                   'Maghrib'.tr,
                   style: TextStyle(
@@ -109,8 +142,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       fontWeight: FontWeight.w500),
                 ),
               ] else if (currentDate.hour >= maghrib.hour &&
-                      currentDate.hour <= isha.hour ||
-                  currentDate.minute == isha.minute) ...[
+                  currentDate.hour <= isha.hour &&
+                  currentDate.minute <= isha.minute) ...[
                 Text(
                   'Isha'.tr,
                   style: TextStyle(
@@ -124,7 +157,62 @@ class _PrayerScreenState extends State<PrayerScreen> {
               const SizedBox(
                 height: 16.0,
               ),
-              buildTime(context),
+              if (currentDate.hour > isha.hour ||
+                  currentDate.hour <= fajr.hour) ...[
+                Text(
+                  '${prayer.data?.timings?.fajr}',
+                  style: TextStyle(
+                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500),
+                ),
+              ] else if (currentDate.hour >= fajr.hour &&
+                      currentDate.hour < dhuhr.hour ||
+                  currentDate.minute <= dhuhr.minute) ...[
+                Text('${prayer.data?.timings?.dhuhr}',
+                    style: TextStyle(
+                        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500))
+              ] else if (currentDate.hour >= dhuhr.hour &&
+                  currentDate.hour <= asr.hour &&
+                  currentDate.minute <= asr.minute) ...[
+                Text('${prayer.data?.timings?.asr}',
+                    style: TextStyle(
+                        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500)),
+              ] else if (currentDate.hour >= asr.hour &&
+                      currentDate.hour <= maghrib.hour ||
+                  currentDate.minute <= maghrib.minute) ...[
+                Text(
+                  '${prayer.data?.timings?.maghrib}',
+                  style: TextStyle(
+                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500),
+                ),
+              ] else if (currentDate.hour >= maghrib.hour &&
+                  currentDate.hour <= isha.hour &&
+                  currentDate.minute <= isha.minute) ...[
+                Text(
+                  '${prayer.data?.timings?.isha}',
+                  style: TextStyle(
+                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
               const SizedBox(
                 height: 50.0,
               ),
@@ -135,7 +223,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadiusDirectional.circular(30.0),
                   color: ModeCubit.getContext(context).isDark == true
-                      ? (currentDate.hour >= 20 && currentDate.hour <= 5)
+                      ? (currentDate.hour >= 20 && currentDate.hour <= 5 ||
+                              currentDate.timeZoneOffset.inHours <= 5)
                           ? Colors.white
                           : azanBoxColor.withOpacity(.6)
                       : Colors.black.withOpacity(.5),
@@ -149,21 +238,24 @@ class _PrayerScreenState extends State<PrayerScreen> {
     );
   }
 
-  Widget buildTime(context) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return Text(
-      '$hours hr:$minutes min:$seconds sec'.tr,
-      style: TextStyle(
-        fontSize: 20.0,
-        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-            ? Colors.white
-            : Colors.black,
-      ),
-    );
-  }
+  // Widget buildTime(context) {
+  //   String twoDigits(int n) => n.toString().padLeft(2, '0');
+  //   final hours = twoDigits(duration.inHours);
+  //   final minutes = twoDigits(duration.inMinutes.remainder(60));
+  //   final seconds = twoDigits(duration.inSeconds.remainder(60));
+  //   return Text(
+  //     '$hours hr:$minutes min:$seconds sec'.tr,
+  //     style: TextStyle(
+  //       fontSize: 20.0,
+  //       color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+  //           ? Colors.white
+  //           : Colors.black,
+  //     ),
+  //   );
+  // }
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Widget buildPrayerList(context) => DefaultTextStyle(
         style: TextStyle(
@@ -178,99 +270,17 @@ class _PrayerScreenState extends State<PrayerScreen> {
               padding: const EdgeInsets.symmetric(vertical: 5.0),
               child: Row(
                 children: [
-                  ConstrainedBox(
-                    constraints: const BoxConstraints.tightForFinite(),
-                    child: Container(
-                      child: Stack(
-                        children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.fastOutSlowIn,
-                            width:
-                                MainCubit.getContext(context).isOpen ? 200 : 45,
-                          ),
-                          Container(
-                            width: 40.0,
-                            decoration: BoxDecoration(
-                              color: green.withOpacity(.4),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              onPressed: () async {
-                                NotificationService.showNotification(
-                                  title: '${upcomingPrayer()}',
-                                  body:
-                                      '${upcomingPrayer()} prayer time is coming',
-                                  time: TimeOfDay.now(),
-                                );
-                                print(fajr);
-                                // NotificationModel.scheduleNotification(
-                                //     title: '$upcomingLevelPrayer',
-                                //     body: 'Prayer Time',
-                                //     flutterLocalNotificationsPlugin:
-                                //         flutterLocalNotificationsPlugin);
-                                // MainCubit.getContext(context)
-                                //     .changeNotificationIcon();
-                              },
-                              icon: const Icon(
-                                Icons.notifications_active,
-                                color: green,
-                              ),
-                            ),
-                          ),
-                          AnimatedOpacity(
-                            opacity:
-                                MainCubit.getContext(context).isOpen ? 1 : 0,
-                            duration: const Duration(milliseconds: 400),
-                            child: Container(
-                              padding:
-                                  const EdgeInsetsDirectional.only(start: 40.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      // NotificationModel
-                                      //     .scheduleWithNoSoundNotification(
-                                      //         title: '$upcomingLevelPrayer',
-                                      //         body: 'Prayer Time',
-                                      //         flutterLocalNotificationsPlugin:
-                                      //             flutterLocalNotificationsPlugin);
-                                      // MainCubit.getContext(context).isOpen ==
-                                      //     true;
-                                    },
-                                    icon: const Icon(
-                                      Icons.vibration,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      NotificationService.stopNotification();
-                                      MainCubit.getContext(context).isOpen ==
-                                          true;
-                                    },
-                                    icon: const Icon(
-                                      Icons.notifications_off,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      MainCubit.getContext(context)
-                                          .changeNotificationIcon();
-                                    },
-                                    icon: const Icon(
-                                      Icons.close,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                  Container(
+                    width: 40.0,
+                    decoration: BoxDecoration(
+                      color: green.withOpacity(.4),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.notifications_active,
+                        color: green,
                       ),
                     ),
                   ),
@@ -431,9 +441,9 @@ class _PrayerScreenState extends State<PrayerScreen> {
         ),
       );
 
-  String? upcomingLevelPrayer;
+  var upcomingLevelPrayer;
 
-  String? upcomingPrayer() {
+  String upcomingPrayer() {
     if (currentDate.hour == fajr!.hour) {
       return upcomingLevelPrayer = 'Fajr';
     } else if (currentDate.hour == dhuhr!.hour &&
@@ -452,81 +462,62 @@ class _PrayerScreenState extends State<PrayerScreen> {
     return upcomingLevelPrayer;
   }
 
-  var comingTime;
-
-  TimeOfDay upcomingPrayerTime() {
-    if (currentDate.hour == fajr!.hour && currentDate.minute == fajr!.minute) {
-      return comingTime = fajr!;
-    } else if (currentDate.hour == dhuhr!.hour &&
-        currentDate.minute == dhuhr!.minute) {
-      return comingTime = dhuhr!;
-    } else if (currentDate.hour == asr!.hour &&
-        currentDate.minute == asr!.minute) {
-      return comingTime = asr!;
-    } else if (currentDate.hour == maghrib!.hour &&
-        currentDate.minute == maghrib!.minute) {
-      return comingTime = maghrib!;
-    } else if (currentDate.hour == isha!.hour &&
-        currentDate.minute == isha!.minute) {
-      return comingTime = isha!;
-    }
-    return comingTime;
-
-    ///there is an error here check it out first
-  }
-
   @override
   void initState() {
     super.initState();
-    startTimer();
-    reset();
-    // upcomingTimePrayer();
   }
 
-  // int upcomingTimeHour = 0;
-  // int upcomingTimeMinute = 0;
-  //
-  // void upcomingTimePrayer() {
-  //   if (currentDate.isBefore(fajr.hour) &&
-  //       currentDate.isAfter(isha.milisecond)) {
-  //     upcomingTimeHour = fajr.hour - dhuhr.hour;
-  //     upcomingTimeMinute = fajr.minute - dhuhr.minute;
-  //   }
-  // }
+// DateTime upcomingPrayerTime() {
+//   if (currentDate.hour == fajr!.hour && currentDate.minute == fajr!.minute) {
+//     return comingTime = fajr!;
+//   } else if (currentDate.hour == dhuhr!.hour &&
+//       currentDate.minute == dhuhr!.minute) {
+//     return comingTime = dhuhr!;
+//   } else if (currentDate.hour == asr!.hour &&
+//       currentDate.minute == asr!.minute) {
+//     return comingTime = asr!;
+//   } else if (currentDate.hour == maghrib!.hour &&
+//       currentDate.minute == maghrib!.minute) {
+//     return comingTime = maghrib!;
+//   } else if (currentDate.hour == isha!.hour &&
+//       currentDate.minute == isha!.minute) {
+//     return comingTime = isha!;
+//   }
+//   return comingTime;
+// }
 
-  Timer? timer;
-
-  bool isCountDown = true;
-  static const countDownDuration =
-      Duration(hours: 2, minutes:0);
-  Duration duration = const Duration();
-
-  void startTimer() {
-    setState(() {
-      timer = Timer.periodic(
-        const Duration(seconds: 1),
-        (timer) => minusTime(),
-      );
-    });
-  }
-
-  void minusTime() {
-    setState(() {
-      const addSeconds = 1;
-      final seconds = duration.inSeconds - addSeconds;
-      if (seconds > 0) {
-        duration = Duration(seconds: seconds);
-      } else {
-        timer?.cancel();
-      }
-    });
-  }
-
-  void reset() {
-    if (isCountDown) {
-      setState(() => duration = countDownDuration);
-    } else {
-      setState(() => duration = const Duration());
-    }
-  }
+// Timer? timer;
+//
+// bool isCountDown = true;
+// static const countDownDuration = Duration(hours: 2, minutes: 0);
+// Duration duration = const Duration();
+//
+// void startTimer() {
+//   setState(() {
+//     timer = Timer.periodic(
+//       const Duration(seconds: 1),
+//       (timer) => minusTime(),
+//     );
+//   });
+// }
+//
+// void minusTime() {
+//   setState(() {
+//     const addSeconds = 1;
+//     final seconds = duration.inSeconds - addSeconds;
+//     if (seconds > 0) {
+//       duration = Duration(seconds: seconds);
+//     } else {
+//       timer?.cancel();
+//     }
+//   });
+// }
+//
+// void reset() {
+//   if (isCountDown) {
+//     setState(() => duration = countDownDuration);
+//   } else {
+//     setState(() => duration = const Duration());
+//   }
+// }
 }

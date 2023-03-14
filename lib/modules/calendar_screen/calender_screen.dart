@@ -35,7 +35,8 @@ class _CalenderScreenState extends State<CalenderScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
               color: ModeCubit.getContext(context).isDark == true
-                  ? (currentDate.hour >= 20 && currentDate.hour <= 5)
+                  ? (currentDate.hour >= 20 && currentDate.hour <= 5 ||
+                  currentDate.timeZoneOffset.inHours <= 5)
                   ? Colors.white
                   : azanBoxColor.withOpacity(.6)
                   : Colors.black.withOpacity(.5),
@@ -80,7 +81,8 @@ class _CalenderScreenState extends State<CalenderScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadiusDirectional.circular(30.0),
             color: ModeCubit.getContext(context).isDark == true
-                ? (currentDate.hour >= 20 && currentDate.hour <= 5)
+                ? (currentDate.hour >= 20 && currentDate.hour <= 5 ||
+                currentDate.timeZoneOffset.inHours <= 5)
                 ? Colors.white
                 : azanBoxColor.withOpacity(.6)
                 : Colors.black.withOpacity(.5),
