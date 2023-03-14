@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
@@ -466,58 +465,4 @@ class _PrayerScreenState extends State<PrayerScreen> {
   void initState() {
     super.initState();
   }
-
-// DateTime upcomingPrayerTime() {
-//   if (currentDate.hour == fajr!.hour && currentDate.minute == fajr!.minute) {
-//     return comingTime = fajr!;
-//   } else if (currentDate.hour == dhuhr!.hour &&
-//       currentDate.minute == dhuhr!.minute) {
-//     return comingTime = dhuhr!;
-//   } else if (currentDate.hour == asr!.hour &&
-//       currentDate.minute == asr!.minute) {
-//     return comingTime = asr!;
-//   } else if (currentDate.hour == maghrib!.hour &&
-//       currentDate.minute == maghrib!.minute) {
-//     return comingTime = maghrib!;
-//   } else if (currentDate.hour == isha!.hour &&
-//       currentDate.minute == isha!.minute) {
-//     return comingTime = isha!;
-//   }
-//   return comingTime;
-// }
-
-// Timer? timer;
-//
-// bool isCountDown = true;
-// static const countDownDuration = Duration(hours: 2, minutes: 0);
-// Duration duration = const Duration();
-//
-// void startTimer() {
-//   setState(() {
-//     timer = Timer.periodic(
-//       const Duration(seconds: 1),
-//       (timer) => minusTime(),
-//     );
-//   });
-// }
-//
-// void minusTime() {
-//   setState(() {
-//     const addSeconds = 1;
-//     final seconds = duration.inSeconds - addSeconds;
-//     if (seconds > 0) {
-//       duration = Duration(seconds: seconds);
-//     } else {
-//       timer?.cancel();
-//     }
-//   });
-// }
-//
-// void reset() {
-//   if (isCountDown) {
-//     setState(() => duration = countDownDuration);
-//   } else {
-//     setState(() => duration = const Duration());
-//   }
-// }
-}
+  }

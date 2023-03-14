@@ -293,18 +293,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) =>
-                                    buildPrayers(prayers[index], index),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                  height: 10.0,
+                              Expanded(
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) =>
+                                      buildPrayers(prayers[index], index),
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  itemCount: MainCubit.getContext(context)
+                                      .prayersList
+                                      .length,
                                 ),
-                                itemCount: MainCubit.getContext(context)
-                                    .prayersList
-                                    .length,
                               ),
                             ],
                           ),
@@ -1130,34 +1132,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'OFF'.tr,
   ];
 
-  Widget buildNotificationSystem(index) => InkWell(
-        onTap: () {
-          // if (notificationSystem[index] == 0) {
-          //   NotificationModel.scheduleNotification(
-          //       title: 'Asr prayer',
-          //       body: 'Asr notification sound got it',
-          //       flutterLocalNotificationsPlugin:
-          //           flutterLocalNotificationsPlugin);
-          // } else if (notificationSystem[index] == 1) {
-          //   NotificationModel.scheduleWithNoSoundNotification(
-          //       title: 'Asr Prayer',
-          //       body: 'Asr Prayer with no sound',
-          //       flutterLocalNotificationsPlugin:
-          //           flutterLocalNotificationsPlugin);
-          // } else {
-          //   NotificationModel.stopNotification();
-          // }
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
-          child: Text(
-            notificationSystem[index],
-            style: TextStyle(
-              color: ModeCubit.getContext(context).isDark == true
-                  ? Colors.black
-                  : Colors.white,
-              fontSize: 16.0,
-            ),
+  Widget buildNotificationSystem(index) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
+        child: Text(
+          notificationSystem[index],
+          style: TextStyle(
+            color: ModeCubit.getContext(context).isDark == true
+                ? Colors.black
+                : Colors.white,
+            fontSize: 16.0,
           ),
         ),
       );
