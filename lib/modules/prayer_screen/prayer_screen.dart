@@ -120,7 +120,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         fontSize: 24,
                         fontWeight: FontWeight.w500))
               ] else if (currentDate.hour >= dhuhr.hour &&
-                  currentDate.hour <= asr.hour &&
+                      currentDate.hour <= asr.hour ||
                   currentDate.minute <= asr.minute) ...[
                 Text('Asr'.tr,
                     style: TextStyle(
@@ -179,7 +179,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         fontSize: 24,
                         fontWeight: FontWeight.w500))
               ] else if (currentDate.hour >= dhuhr.hour &&
-                  currentDate.hour <= asr.hour &&
+                      currentDate.hour <= asr.hour ||
                   currentDate.minute <= asr.minute) ...[
                 Text('${prayer.data?.timings?.asr}',
                     style: TextStyle(
