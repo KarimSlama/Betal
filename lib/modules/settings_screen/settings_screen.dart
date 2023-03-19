@@ -166,115 +166,119 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               child: IconButton(
                                 onPressed: () {
                                   MainCubit.getContext(context)
-                                      .chooseAudio()
+                                      .pickFile()
                                       .then((value) {
-                                    scaffoldKey.currentState
-                                        ?.showBottomSheet((context) => Form(
-                                              key: formKey,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadiusDirectional
-                                                          .only(
-                                                    topStart:
-                                                        Radius.circular(30),
-                                                    topEnd: Radius.circular(30),
+                                    if (MainCubit.getContext(context).result !=
+                                        null) {
+                                      scaffoldKey.currentState
+                                          ?.showBottomSheet((context) => Form(
+                                                key: formKey,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        const BorderRadiusDirectional
+                                                            .only(
+                                                      topStart:
+                                                          Radius.circular(30),
+                                                      topEnd:
+                                                          Radius.circular(30),
+                                                    ),
+                                                    color: ModeCubit.getContext(
+                                                                    context)
+                                                                .isDark ==
+                                                            true
+                                                        ? azanBoxColor
+                                                            .withOpacity(.2)
+                                                        : Colors.white,
                                                   ),
-                                                  color: ModeCubit.getContext(
-                                                                  context)
-                                                              .isDark ==
-                                                          true
-                                                      ? azanBoxColor
-                                                          .withOpacity(.2)
-                                                      : Colors.white,
-                                                ),
-                                                height: 300,
-                                                width: double.infinity,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 14.0,
-                                                        vertical: 30.0),
-                                                child: Column(
-                                                  children: [
-                                                    TextFormField(
-                                                      keyboardType:
-                                                          TextInputType.text,
-                                                      controller:
-                                                          prayerController,
-                                                      validator: (value) {
-                                                        if (value!.isEmpty) {
-                                                          return 'prayer name is important'
-                                                              .tr;
-                                                        }
-                                                        return null;
-                                                      },
-                                                      decoration:
-                                                          InputDecoration(
-                                                        label: Text(
-                                                            'enter prayer name'
-                                                                .tr),
-                                                        border:
-                                                            OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            15.0,
+                                                  height: 300,
+                                                  width: double.infinity,
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 14.0,
+                                                      vertical: 30.0),
+                                                  child: Column(
+                                                    children: [
+                                                      TextFormField(
+                                                        keyboardType:
+                                                            TextInputType.text,
+                                                        controller:
+                                                            prayerController,
+                                                        validator: (value) {
+                                                          if (value!.isEmpty) {
+                                                            return 'prayer name is important'
+                                                                .tr;
+                                                          }
+                                                          return null;
+                                                        },
+                                                        decoration:
+                                                            InputDecoration(
+                                                          label: Text(
+                                                              'enter prayer name'
+                                                                  .tr),
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                              15.0,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 40.0,
-                                                    ),
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadiusDirectional
-                                                                .circular(10.0),
-                                                        color: Colors
-                                                            .green.shade800,
+                                                      const SizedBox(
+                                                        height: 40.0,
                                                       ),
-                                                      child: MaterialButton(
-                                                        onPressed: () {
-                                                          if (formKey
-                                                              .currentState!
-                                                              .validate()) {
-                                                            MainCubit
-                                                                    .getContext(
-                                                                        context)
-                                                                .insertIntoDatabase(
-                                                              prayerName:
-                                                                  prayerController
-                                                                      .text,
-                                                              prayerPath: MainCubit
-                                                                      .getContext(
-                                                                          context)
-                                                                  .file,
-                                                            );
-                                                          }
-                                                        },
-                                                        child: Text(
-                                                          'Add Prayer'.tr,
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Colors
-                                                                      .white),
+                                                      Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadiusDirectional
+                                                                  .circular(
+                                                                      10.0),
+                                                          color: Colors
+                                                              .green.shade800,
                                                         ),
-                                                      ),
-                                                    )
-                                                  ],
+                                                        child: MaterialButton(
+                                                          onPressed: () {
+                                                            if (formKey
+                                                                .currentState!
+                                                                .validate()) {
+                                                              MainCubit.getContext(
+                                                                      context)
+                                                                  .insertIntoDatabase(
+                                                                prayerName:
+                                                                    prayerController
+                                                                        .text,
+                                                                prayerPath: MainCubit
+                                                                        .getContext(
+                                                                            context)
+                                                                    .filePath,
+                                                              );
+                                                            }
+                                                          },
+                                                          child: Text(
+                                                            'Add Prayer'.tr,
+                                                            style: const TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ))
-                                        .closed
-                                        .then((value) {
-                                      MainCubit.getContext(context)
-                                          .changeBottomSheetState(false);
-                                    });
+                                              ))
+                                          .closed
+                                          .then((value) {
+                                        MainCubit.getContext(context)
+                                            .changeBottomSheetState(false);
+                                      });
+                                    }
                                     MainCubit.getContext(context)
                                         .changeBottomSheetState(true);
                                   });
@@ -293,20 +297,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: ListView.separated(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index) =>
-                                      buildPrayers(prayers[index], index),
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  itemCount: MainCubit.getContext(context)
-                                      .prayersList
-                                      .length,
+                              ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) =>
+                                    buildPrayers(prayers[index], index),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(
+                                  height: 10.0,
                                 ),
+                                itemCount: MainCubit.getContext(context)
+                                    .prayersList
+                                    .length,
                               ),
                             ],
                           ),
@@ -685,377 +687,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(
                       height: 20.0,
                     ),
-                    Theme(
-                      data: ThemeData()
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        onExpansionChanged: (value) {},
-                        title: Row(
-                          children: [
-                            Text(
-                              'Fajr'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Notify With Sound'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        collapsedTextColor: Colors.green.shade800,
-                        trailing: isOpen
-                            ? Icon(Icons.keyboard_arrow_down_rounded,
-                                color: Colors.green.shade800)
-                            : const Icon(Icons.arrow_forward_ios_outlined),
-                        children: [
-                          Container(
-                            height: 170,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildNotificationSystem(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: notificationSystem.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    divider(),
-                    Theme(
-                      data: ThemeData()
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        onExpansionChanged: (value) {},
-                        title: Row(
-                          children: [
-                            Container(
-                              width: 100,
-                              child: Text(
-                                'Sunrise'.tr,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: ModeCubit.getContext(context).isDark ==
-                                          true
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-                            Container(
-                              width: 120,
-                              child: Text(
-                                'Alert Only'.tr,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: ModeCubit.getContext(context).isDark ==
-                                          true
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        collapsedTextColor: Colors.green.shade800,
-                        trailing: isOpen
-                            ? Icon(Icons.keyboard_arrow_down_rounded,
-                                color: Colors.green.shade800)
-                            : const Icon(Icons.arrow_forward_ios_outlined),
-                        children: [
-                          Container(
-                            height: 170,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildNotificationSystem(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: notificationSystem.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    divider(),
-                    Theme(
-                      data: ThemeData()
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        onExpansionChanged: (value) {},
-                        title: Row(
-                          children: [
-                            Text(
-                              'Dhuhr'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Notify With Sound'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        collapsedTextColor: Colors.green.shade800,
-                        trailing: isOpen
-                            ? Icon(Icons.keyboard_arrow_down_rounded,
-                                color: Colors.green.shade800)
-                            : const Icon(Icons.arrow_forward_ios_outlined),
-                        children: [
-                          Container(
-                            height: 170,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildNotificationSystem(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: notificationSystem.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    divider(),
-                    Theme(
-                      data: ThemeData()
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        onExpansionChanged: (value) {},
-                        title: Row(
-                          children: [
-                            Text(
-                              'Asr'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Notify With Sound'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        collapsedTextColor: Colors.green.shade800,
-                        trailing: isOpen
-                            ? Icon(Icons.keyboard_arrow_down_rounded,
-                                color: Colors.green.shade800)
-                            : const Icon(Icons.arrow_forward_ios_outlined),
-                        children: [
-                          Container(
-                            height: 170,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildNotificationSystem(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: notificationSystem.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    divider(),
-                    Theme(
-                      data: ThemeData()
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        onExpansionChanged: (value) {},
-                        title: Row(
-                          children: [
-                            Text(
-                              'Maghrib'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Notify With Sound'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        collapsedTextColor: Colors.green.shade800,
-                        trailing: isOpen
-                            ? Icon(Icons.keyboard_arrow_down_rounded,
-                                color: Colors.green.shade800)
-                            : const Icon(Icons.arrow_forward_ios_outlined),
-                        children: [
-                          Container(
-                            height: 170,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildNotificationSystem(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: notificationSystem.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    divider(),
-                    Theme(
-                      data: ThemeData()
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: ExpansionTile(
-                        onExpansionChanged: (value) {},
-                        title: Row(
-                          children: [
-                            Text(
-                              'Isha'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              'Notify With Sound'.tr,
-                              style: TextStyle(
-                                color:
-                                    ModeCubit.getContext(context).isDark == true
-                                        ? Colors.black
-                                        : Colors.white,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        collapsedTextColor: Colors.green.shade800,
-                        trailing: isOpen
-                            ? Icon(Icons.keyboard_arrow_down_rounded,
-                                color: Colors.green.shade800)
-                            : const Icon(Icons.arrow_forward_ios_outlined),
-                        children: [
-                          Container(
-                            height: 170,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) =>
-                                        buildNotificationSystem(index),
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    itemCount: notificationSystem.length,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                    Container(
+                      height: 500,
+                      child: ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) =>
+                            buildNotificationSystem(index),
+                        separatorBuilder: (context, index) => divider(),
+                        itemCount: prayersName.length,
                       ),
                     ),
                   ],
@@ -1070,10 +709,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget buildPrayers(Map prayers, index) => InkWell(
         onTap: () async {
-          selectedSound = prayers['prayer_path'];
+          selectedSound = prayers['prayer_name'];
           CacheHelper.saveData(key: 'prayer_call', value: selectedSound);
           selectedSound = CacheHelper.getData(key: 'prayer_call');
-          print(selectedSound);
+          print('the selected sound is $selectedSound');
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
@@ -1126,16 +765,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
 
-  List<String> notificationSystem = [
+  List<String> prayersName = [
+    'Fajr',
+    'Sunrise',
+    'Dhuhr',
+    'Asr',
+    'Maghrib',
+    'Isha',
+  ];
+
+  List<String> notificationStatus = [
     'Notify With Sound'.tr,
     'Alert Only'.tr,
     'OFF'.tr,
   ];
 
-  Widget buildNotificationSystem(index) => Padding(
+  var notificationSelected = [];
+
+  @override
+  void initState() {
+    super.initState();
+    notificationSelected = List.generate(prayersName.length, (index) => 0);
+  }
+
+  Widget buildNotificationSystem(index) {
+    return Theme(
+      data: ThemeData().copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        onExpansionChanged: (value) {},
+        title: Row(
+          children: [
+            Text(
+              prayersName[index].tr,
+              style: TextStyle(
+                color: ModeCubit.getContext(context).isDark == true
+                    ? Colors.black
+                    : Colors.white,
+                fontSize: 16.0,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              notificationStatus[notificationSelected[index]],
+              style: TextStyle(
+                color: ModeCubit.getContext(context).isDark == true
+                    ? Colors.black
+                    : Colors.white,
+                fontSize: 16.0,
+              ),
+            ),
+          ],
+        ),
+        collapsedTextColor: Colors.green.shade800,
+        trailing: isOpen
+            ? Icon(Icons.keyboard_arrow_down_rounded,
+                color: Colors.green.shade800)
+            : const Icon(Icons.arrow_forward_ios_outlined),
+        children: [
+          Container(
+            height: 180,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, listIndex) =>
+                        buildNotificationSystemList(listIndex, index),
+                    separatorBuilder: (context, listIndex) => const SizedBox(
+                      height: 10.0,
+                    ),
+                    itemCount: notificationStatus.length,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildNotificationSystemList(listIndex, index) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          notificationSelected[index] = listIndex;
+        });
+        CacheHelper.saveData(
+            key: 'selectedNotificationStatus',
+            value: notificationSelected[index]);
+        notificationSelected =
+            CacheHelper.getData(key: 'selectedNotificationStatus') ?? 0;
+      },
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
         child: Text(
-          notificationSystem[index],
+          notificationStatus[listIndex],
           style: TextStyle(
             color: ModeCubit.getContext(context).isDark == true
                 ? Colors.black
@@ -1143,7 +869,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             fontSize: 16.0,
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  Future<void> getSavedNotificationStatus() async {
+    for (int i = 0; i < prayersName.length; i++) {
+      int savedIndex = CacheHelper.getData(key: 'prayersName[index]');
+      if (savedIndex != null) {
+        setState(() {
+          notificationSelected[i] = savedIndex;
+        });
+      }
+    }
+  }
 
   int selected = 0;
   bool isOpen = true;

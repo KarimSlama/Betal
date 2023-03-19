@@ -129,8 +129,12 @@ class QiblahCompassWidget extends StatelessWidget {
             Positioned(
               bottom: 10,
               child: Text('${qiblahDirection.offset.toStringAsFixed(3)}°',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 16.0)),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16.0,
+                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
+                          ? Colors.white
+                          : Colors.black)),
             )
           ],
         );

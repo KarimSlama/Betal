@@ -166,30 +166,54 @@ class MainCubit extends Cubit<MainState> {
   Database? database;
   List<Map> prayersList = [];
 
-  FilePickerResult? result;
-  File? file;
+  // File? file;
 
-  Future chooseAudio() async {
-    result = await FilePicker.platform.pickFiles(type: FileType.audio);
-    if (result != null) {
-      file = File(result!.files.single.path ?? '');
-      Directory rawDirectory = await getRawDirectory();
-      await file?.copy("${rawDirectory.path}/${result?.files.single.name}");
-      print('The audio path is: ${file?.path.toString()}');
-      emit(PickAudioSuccessState());
-    } else {
-      print('error when open picker');
+  // Future chooseAudio() async {
+  //   result = await FilePicker.platform.pickFiles(type: FileType.audio);
+  //   if (result != null) {
+  //     file = File(result!.files.single.path ?? '');
+  //     Directory rawDirectory = await getRawDirectory();
+  //     await file?.copy("${rawDirectory.path}/${result?.files.single.name}");
+  //     print('The audio path is: ${file?.path.toString()}');
+  //     emit(PickAudioSuccessState());
+  //   } else {
+  //     print('error when open picker');
+  //     emit(PickAudioErrorState());
+  //   }
+  // }
+
+  String? filePath;
+  FilePickerResult? result;
+
+  Future<void> pickFile() async {
+    try {
+      result = await FilePicker.platform.pickFiles(type: FileType.audio);
+      if (result != null) {
+        String? path = result!.files.single.path;
+        if (path != null) {
+          File file = File(path);
+          Directory rawDir = await getApplicationDocumentsDirectory();
+          String rawPath = '${rawDir.path}/raw/';
+          await Directory(rawPath)
+              .create(recursive: true); // create the "raw" directory
+          String fileName = file.path.split('/').last;
+          String _filePath = '$rawPath$fileName';
+          await file.copy(_filePath);
+          filePath = _filePath;
+          print('The audio path is: ${filePath.toString()}');
+          emit(PickAudioSuccessState());
+        } else {
+          print('Error: File path is null.');
+          emit(PickAudioErrorState());
+        }
+      } else {
+        print('Error: FilePickerResult is null.');
+        emit(PickAudioErrorState());
+      }
+    } catch (e) {
+      print('Error: $e');
       emit(PickAudioErrorState());
     }
-  }
-
-  Future<Directory> getRawDirectory() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    Directory rawDirectory = Directory("${directory.path}/app_flutter/raw");
-    if (!rawDirectory.existsSync()) {
-      rawDirectory.createSync(recursive: true);
-    }
-    return rawDirectory;
   }
 
   // Future<void> saveToRaw(fileName) async {
@@ -202,6 +226,15 @@ class MainCubit extends Cubit<MainState> {
   //     newFile.writeAsBytesSync(file!.readAsBytesSync());
   //   }
   // }
+
+  Future<Directory> getRawDirectory() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    Directory rawDirectory = Directory("${directory.path}/betal_app/raw");
+    if (!rawDirectory.existsSync()) {
+      rawDirectory.createSync(recursive: true);
+    }
+    return rawDirectory;
+  }
 
   // Future<Directory> getApplicationDocumentsDirectory() async {
   //   final String? path = await Platform.getApplicationDocumentsPath();
@@ -230,13 +263,13 @@ class MainCubit extends Cubit<MainState> {
         database
             .execute(
                 'CREATE TABLE prayers (id INTEGER PRIMARY KEY, prayer_name TEXT, prayer_path TEXT)')
-            .then((value) {
-                  });
+            .then((value) {});
       },
       onOpen: (database) {
         insertIntoDatabase(
             prayerName: 'Ahmed Al nafis',
-            prayerPath: '/data/user/0/com.example.battal/cache/''file_picker/أذان يأخذك لعالم آخر _ A prayer call that takes you to another world(MP3_128K).mp3');
+            prayerPath: '/data/user/0/com.example.battal/cache/'
+                'file_picker/أذان يأخذك لعالم آخر _ A prayer call that takes you to another world(MP3_128K).mp3');
         getAllData(database);
         print('database opened');
       },

@@ -1,3 +1,4 @@
+import 'package:Betal/shared/components/constants.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -21,16 +22,19 @@ class NotificationService {
       required FlutterLocalNotificationsPlugin
           flutterLocalNotificationsPlugin}) async {
     AndroidNotificationDetails androidNotificationDetails =
-        const AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'prayer time',
-      'prayer time is coming',
+      'prayer time',
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('ahmed_alnafis'),
-      importance: Importance.max,
+      sound:
+          RawResourceAndroidNotificationSound(selectedSound ?? 'ahmed_alnafis'),
+      importance: Importance.high,
+      priority: Priority.high,
     );
     var notification = NotificationDetails(
         android: androidNotificationDetails,
-        iOS: const DarwinNotificationDetails(sound: 'ahmed_alnafis.caf'));
+        iOS: DarwinNotificationDetails(
+            sound: selectedSound ?? 'ahmed_alnafis.caf'));
     await flutterLocalNotificationsPlugin.schedule(
         100, title, body, time!, notification);
   }
@@ -44,15 +48,16 @@ class NotificationService {
           flutterLocalNotificationsPlugin}) async {
     AndroidNotificationDetails androidNotificationDetails =
         const AndroidNotificationDetails(
-      'Prayer Time',
       'prayer time',
-      playSound: false,
-      importance: Importance.high,
+      'prayer time',
+      importance: Importance.max,
       priority: Priority.high,
+      enableVibration: true,
+      playSound: false,
     );
     var notification = NotificationDetails(
         android: androidNotificationDetails,
-        iOS: const DarwinNotificationDetails(sound: 'ahmed_alnafis.caf'));
+        iOS: const DarwinNotificationDetails());
     await flutterLocalNotificationsPlugin.schedule(
         100, title, body, time, notification);
   }

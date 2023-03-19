@@ -103,18 +103,11 @@ class MainLayout extends StatelessWidget {
                                   ),
                                   IconButton(
                                       padding: EdgeInsetsDirectional.zero,
-                                      onPressed: () {
-                                        // NotificationModel.scheduleNotification(
-                                        //   title: 'title',
-                                        //   body: 'prayer time',
-                                        //   flutterLocalNotificationsPlugin:
-                                        //       flutterLocalNotificationsPlugin,
-                                        // );
-                                      },
+                                      onPressed: () {},
                                       icon: const Icon(Icons.refresh),
                                       iconSize: 16,
                                       color: (currentDate.hour >= 20 ||
-                                          currentDate.hour <= 5)
+                                              currentDate.hour <= 5)
                                           ? Colors.white
                                           : Colors.black),
                                   const Spacer(),
@@ -126,7 +119,7 @@ class MainLayout extends StatelessWidget {
                                           const Icon(FontAwesomeIcons.whatsapp),
                                       iconSize: 30,
                                       color: (currentDate.hour >= 20 ||
-                                          currentDate.hour <= 5)
+                                              currentDate.hour <= 5)
                                           ? Colors.white
                                           : Colors.black),
                                   IconButton(
@@ -137,7 +130,7 @@ class MainLayout extends StatelessWidget {
                                       icon: const Icon(Icons.share_outlined),
                                       iconSize: 30,
                                       color: (currentDate.hour >= 20 ||
-                                          currentDate.hour <= 5)
+                                              currentDate.hour <= 5)
                                           ? Colors.white
                                           : Colors.black),
                                   IconButton(
@@ -148,7 +141,7 @@ class MainLayout extends StatelessWidget {
                                       icon: const Icon(Icons.settings),
                                       iconSize: 30,
                                       color: (currentDate.hour >= 20 ||
-                                          currentDate.hour <= 5)
+                                              currentDate.hour <= 5)
                                           ? Colors.white
                                           : Colors.black),
                                 ],
@@ -159,7 +152,7 @@ class MainLayout extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 14.0,
                                     color: (currentDate.hour >= 20 ||
-                                        currentDate.hour <= 5)
+                                            currentDate.hour <= 5)
                                         ? Colors.white
                                         : Colors.black),
                               ),
@@ -171,7 +164,7 @@ class MainLayout extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 14.0,
                                     color: (currentDate.hour >= 20 ||
-                                        currentDate.hour <= 5)
+                                            currentDate.hour <= 5)
                                         ? Colors.white
                                         : Colors.black),
                               ),
