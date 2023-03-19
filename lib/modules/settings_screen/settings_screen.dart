@@ -1,5 +1,6 @@
 import 'package:Betal/layouts/mainLayout.dart';
 import 'package:Betal/models/prayer_model.dart';
+import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
@@ -29,6 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool initialValue = true;
   bool isSwitch = true;
   bool isMadhab = true;
+  bool isClockSystem = true;
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
   var prayerController = TextEditingController();
@@ -648,10 +650,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: CupertinoSwitch(
                               activeColor: Colors.green.shade800,
                               trackColor: Colors.grey,
-                              value: true,
+                              value: isClockSystem,
                               onChanged: (value) {
-                                MainCubit.getContext(context)
-                                    .changeSwitchIcon();
+                                setState(() {
+                                  isClockSystem = !isClockSystem;
+                                });
                               },
                             ),
                           ),
@@ -766,12 +769,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 
   List<String> prayersName = [
-    'Fajr',
-    'Sunrise',
-    'Dhuhr',
-    'Asr',
-    'Maghrib',
-    'Isha',
+    'Fajr'.tr,
+    'Sunrise'.tr,
+    'Dhuhr'.tr,
+    'Asr'.tr,
+    'Maghrib'.tr,
+    'Isha'.tr,
   ];
 
   List<String> notificationStatus = [
@@ -780,7 +783,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'OFF'.tr,
   ];
 
-  var notificationSelected = [];
+  List<int> notificationSelected = [];
 
   @override
   void initState() {
@@ -806,7 +809,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const Spacer(),
             Text(
-              notificationStatus[notificationSelected[index]],
+              notificationStatus[notificationSelected[index]].tr,
               style: TextStyle(
                 color: ModeCubit.getContext(context).isDark == true
                     ? Colors.black
@@ -851,37 +854,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onTap: () {
         setState(() {
           notificationSelected[index] = listIndex;
+          switch (notificationSelected[index]) {
+            case 2:
+              NotificationService.stopNotification();
+          }
         });
-        CacheHelper.saveData(
-            key: 'selectedNotificationStatus',
-            value: notificationSelected[index]);
-        notificationSelected =
-            CacheHelper.getData(key: 'selectedNotificationStatus') ?? 0;
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
         child: Text(
-          notificationStatus[listIndex],
+          notificationStatus[listIndex].tr,
           style: TextStyle(
-            color: ModeCubit.getContext(context).isDark == true
-                ? Colors.black
-                : Colors.white,
+            color: notificationSelected[index] == listIndex
+                ? Colors.green
+                : ModeCubit.getContext(context).isDark == true
+                    ? Colors.black
+                    : Colors.white,
             fontSize: 16.0,
           ),
         ),
       ),
     );
-  }
-
-  Future<void> getSavedNotificationStatus() async {
-    for (int i = 0; i < prayersName.length; i++) {
-      int savedIndex = CacheHelper.getData(key: 'prayersName[index]');
-      if (savedIndex != null) {
-        setState(() {
-          notificationSelected[i] = savedIndex;
-        });
-      }
-    }
   }
 
   int selected = 0;
