@@ -1,6 +1,5 @@
 import 'package:Betal/layouts/mainLayout.dart';
 import 'package:Betal/models/prayer_model.dart';
-import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
@@ -459,7 +458,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Colors.green.shade800)
                             : const Icon(Icons.arrow_forward_ios_outlined),
                         children: [
-                          Container(
+                          SizedBox(
                             height: 450,
                             child: Column(
                               children: [
@@ -687,7 +686,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(
                       height: 20.0,
                     ),
-                    Container(
+                    SizedBox(
                       height: 500,
                       child: ListView.separated(
                         physics: const NeverScrollableScrollPhysics(),
@@ -790,17 +789,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     notificationSelectedIndex = List.generate(prayersName.length, (index) => 0);
   }
 
-  // Map<int, int> notificationSelected = {};
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Initialize the map with 0 for each prayer index
-  //   for (int i = 0; i < prayersName.length; i++) {
-  //     notificationSelected[i] = 0;
-  //   }
-  // }
-
   Widget buildNotificationSystem(index) {
     notificationSelectedIndex[index] =
         CacheHelper.getData(key: 'selectedOption$index') ?? 0;
@@ -837,7 +825,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 color: Colors.green.shade800)
             : const Icon(Icons.arrow_forward_ios_outlined),
         children: [
-          Container(
+          SizedBox(
             height: 180,
             child: Column(
               children: [
@@ -897,36 +885,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // Widget buildNotificationSystemList(listIndex, index) {
-  //   return InkWell(
-  //     onTap: () {
-  //       setState(() {
-  //         notificationSelected[index] = listIndex;
-  //         CacheHelper.saveData(
-  //                 key: 'selectedOption', value: notificationSelected[index])
-  //             .then((value) {
-  //           notificationSelectedIndex[index] =
-  //               CacheHelper.getData(key: 'selectedOption');
-  //         });
-  //       });
-  //     },
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
-  //       child: Text(
-  //         notificationStatus[listIndex].tr,
-  //         style: TextStyle(
-  //           color: notificationSelectedIndex[index] == listIndex
-  //               ? Colors.green
-  //               : ModeCubit.getContext(context).isDark == true
-  //                   ? Colors.black
-  //                   : Colors.white,
-  //           fontSize: 16.0,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   int selected = 0;
   bool isOpen = true;
 
@@ -950,7 +908,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
+                SizedBox(
                   width: 250,
                   child: Text(
                     text,

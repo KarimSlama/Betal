@@ -1,5 +1,4 @@
 import 'package:Betal/layouts/mainLayout.dart';
-import 'package:Betal/main.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/data/local_storage/cache_helper.dart';
@@ -207,7 +206,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ),
       body: Column(
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
             height: 570.0,
             child: PageView.builder(

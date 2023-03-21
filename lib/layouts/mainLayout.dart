@@ -1,5 +1,4 @@
 import 'package:Betal/modules/settings_screen/settings_screen.dart';
-import 'package:Betal/notification_model.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
@@ -256,7 +255,6 @@ class MainLayout extends StatelessWidget {
     SnackBar snackBar;
     final val = await WhatsappShare.isInstalled(package: Package.whatsapp);
     if (val == true) {
-      print('whats app is in if$val');
       share();
     } else {
       snackBar = SnackBar(

@@ -27,7 +27,6 @@ class _CalenderScreenState extends State<CalenderScreen> {
         ),
         GestureDetector(
           onTap: () {
-            print('clicked on tap');
             selectDate(context);
           },
           child: Container(
@@ -194,7 +193,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
   }
 
   Widget horizontalCapsuleListView() {
-    return Container(
+    return SizedBox(
       height: 80,
       child: ListView.builder(
         controller: scrollController,

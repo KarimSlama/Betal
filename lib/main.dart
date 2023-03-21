@@ -27,12 +27,9 @@ void main() async {
   longitude = CacheHelper.getData(key: 'longitude');
   city = CacheHelper.getData(key: 'city');
   country = CacheHelper.getData(key: 'country');
-  // selectedNotificationOption = CacheHelper.getData(key: 'selectedOption') ?? 0;
-  // print('the selected $selectedNotificationOption');
   bool? isDark = CacheHelper.getData(key: 'isDark');
   selectedCurrentLanguage = CacheHelper.getData(key: 'language');
   selectedSound = CacheHelper.getData(key: 'prayer_call');
-  print(selectedSound);
 
   runApp(MyApp(
     selectedLanguage: selectedCurrentLanguage,
