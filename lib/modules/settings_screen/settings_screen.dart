@@ -100,10 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                     const SizedBox(
-                      height: 10.0,
-                    ),
-                    const SizedBox(
-                      height: 10.0,
+                      height: 20.0,
                     ),
                     Theme(
                       data: ThemeData()
@@ -784,14 +781,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
   ];
 
   List<int> notificationSelected = [];
+  List<int> notificationSelectedIndex = [];
 
   @override
   void initState() {
     super.initState();
     notificationSelected = List.generate(prayersName.length, (index) => 0);
+    notificationSelectedIndex = List.generate(prayersName.length, (index) => 0);
   }
 
+  // Map<int, int> notificationSelected = {};
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Initialize the map with 0 for each prayer index
+  //   for (int i = 0; i < prayersName.length; i++) {
+  //     notificationSelected[i] = 0;
+  //   }
+  // }
+
   Widget buildNotificationSystem(index) {
+    notificationSelectedIndex[index] =
+        CacheHelper.getData(key: 'selectedOption$index') ?? 0;
     return Theme(
       data: ThemeData().copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
@@ -809,7 +821,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const Spacer(),
             Text(
-              notificationStatus[notificationSelected[index]].tr,
+              notificationStatus[notificationSelectedIndex[index]].tr,
               style: TextStyle(
                 color: ModeCubit.getContext(context).isDark == true
                     ? Colors.black
@@ -853,11 +865,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return InkWell(
       onTap: () {
         setState(() {
+          // Update the selected option for the current prayer index
           notificationSelected[index] = listIndex;
-          switch (notificationSelected[index]) {
-            case 2:
-              NotificationService.stopNotification();
-          }
+          // Save the selected option to cache
+          CacheHelper.saveData(
+            key: 'selectedOption$index',
+            value: notificationSelected[index],
+          ).then((value) {
+            notificationSelectedIndex[index] =
+                CacheHelper.getData(key: 'selectedOption$index');
+            setState(() {
+              notificationSelectedIndex[index] = listIndex;
+            });
+          });
         });
       },
       child: Padding(
@@ -865,7 +885,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Text(
           notificationStatus[listIndex].tr,
           style: TextStyle(
-            color: notificationSelected[index] == listIndex
+            color: notificationSelectedIndex[index] == listIndex
                 ? Colors.green
                 : ModeCubit.getContext(context).isDark == true
                     ? Colors.black
@@ -876,6 +896,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+
+  // Widget buildNotificationSystemList(listIndex, index) {
+  //   return InkWell(
+  //     onTap: () {
+  //       setState(() {
+  //         notificationSelected[index] = listIndex;
+  //         CacheHelper.saveData(
+  //                 key: 'selectedOption', value: notificationSelected[index])
+  //             .then((value) {
+  //           notificationSelectedIndex[index] =
+  //               CacheHelper.getData(key: 'selectedOption');
+  //         });
+  //       });
+  //     },
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
+  //       child: Text(
+  //         notificationStatus[listIndex].tr,
+  //         style: TextStyle(
+  //           color: notificationSelectedIndex[index] == listIndex
+  //               ? Colors.green
+  //               : ModeCubit.getContext(context).isDark == true
+  //                   ? Colors.black
+  //                   : Colors.white,
+  //           fontSize: 16.0,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   int selected = 0;
   bool isOpen = true;

@@ -33,8 +33,8 @@ class NotificationService {
     );
     var notification = NotificationDetails(
         android: androidNotificationDetails,
-        iOS: DarwinNotificationDetails(
-            sound: selectedSound ?? 'ahmed_alnafis.caf'));
+        iOS:
+            DarwinNotificationDetails(sound: selectedSound ?? 'ahmed_alnafis'));
     await flutterLocalNotificationsPlugin.schedule(
         100, title, body, time!, notification);
   }
@@ -48,8 +48,8 @@ class NotificationService {
           flutterLocalNotificationsPlugin}) async {
     AndroidNotificationDetails androidNotificationDetails =
         const AndroidNotificationDetails(
-      'prayer time',
-      'prayer time',
+      'prayer_time',
+      'prayer_time',
       importance: Importance.max,
       priority: Priority.high,
       enableVibration: true,

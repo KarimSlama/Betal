@@ -17,7 +17,7 @@ var longitude;
 
 var selectedCurrentLanguage;
 var selectedSound;
-var selectedNotificationStatus;
+// var selectedNotificationOption;
 var currentDate = DateTime.now();
 var currentTimeFormatted = DateFormat('HH:mm').format(currentDate);
 var selectedHijriDay = HijriCalendar.now();

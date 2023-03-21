@@ -160,7 +160,7 @@ class MainLayout extends StatelessWidget {
                                 height: 7.0,
                               ),
                               Text(
-                                '${selectedHijriDay.hDay} ${selectedHijriDay.longMonthName.tr}, ${selectedHijriDay.hYear}',
+                                '${selectedHijriDay.hDay} ${selectedCurrentLanguage == 'Arabic' ? main.data!.date!.hijri!.month!.ar : main.data!.date!.hijri!.month!.en}, ${selectedHijriDay.hYear}',
                                 style: TextStyle(
                                     fontSize: 14.0,
                                     color: (currentDate.hour >= 20 ||
