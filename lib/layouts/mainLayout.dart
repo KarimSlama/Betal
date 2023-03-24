@@ -16,6 +16,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:whatsapp_share/whatsapp_share.dart';
 
+import '../prayer_notification.dart';
+
 class MainLayout extends StatelessWidget {
   MainLayout({Key? key}) : super(key: key);
 

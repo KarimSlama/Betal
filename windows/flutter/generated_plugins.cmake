@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
+  awesome_notifications
   flutter_localization
   geolocator_windows
   share_plus

@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:Betal/models/calendar_time_model.dart';
+import 'package:Betal/models/countries_model.dart';
 import 'package:Betal/models/data_with_day_model.dart';
 import 'package:Betal/models/prayer_data_model.dart';
 import 'package:Betal/modules/calendar_screen/calender_screen.dart';
 import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
+import 'package:Betal/shared/data/network/country_dio_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +94,37 @@ class MainCubit extends Cubit<MainState> {
       print(value);
     }).catchError((error) {
       emit(DataWithDayErrorState());
+    });
+  }
+
+  CountriesModel? countriesModel;
+  List<CountriesModel> countries = [];
+
+  void getAllCountries() {
+    emit(GetAllCountriesLoadingState());
+
+    CountryDioHelper.getData(
+      url: 'v3.1/all',
+    ).then((value) {
+      // print(value);
+      countriesModel = CountriesModel.fromJson(value.data);
+      // if (countriesModel != null) {
+      //   for (var element in value.data) {
+      //     countries.add(element);
+      //   }
+      //   emit(GetAllCountriesSuccessState());
+      // } else if (value.data is List) {
+      //   List<dynamic> dataList = value.data.toList();
+      //   for (var element in dataList) {
+      //     countries.add(CountriesModel.fromJson(element));
+      //   }
+      //   emit(GetAllCountriesSuccessState());
+      // } else {
+      //   emit(GetAllCountriesErrorState());
+      // }
+    }).catchError((error) {
+      print(error.toString());
+      emit(GetAllCountriesErrorState());
     });
   }
 

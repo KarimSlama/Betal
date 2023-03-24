@@ -24,6 +24,12 @@ class DataWithDaySuccessState extends MainState {}
 
 class DataWithDayErrorState extends MainState {}
 
+class GetAllCountriesLoadingState extends MainState {}
+
+class GetAllCountriesSuccessState extends MainState {}
+
+class GetAllCountriesErrorState extends MainState {}
+
 class ChangeLanguageSuccessState extends MainState {}
 
 class ExpansionTileIconChangedState extends MainState {}

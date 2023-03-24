@@ -3,6 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_linux
+  awesome_notifications
   flutter_localization
   url_launcher_linux
 )

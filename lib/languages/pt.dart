@@ -48,8 +48,10 @@ const Map<String, String> Portuguese = {
   "Notify With Sound": "Notificar com som",
   "Alert Only": "Apenas alerta",
   "OFF": "Fora",
-  "enter prayer name":"digite o nome do jogador",
-  "Add Prayer":"Adicionar jogador",
+  "enter prayer name": "digite o nome do jogador",
+  "Add Prayer": "Adicionar jogador",
   "prayer name is important": "nome da oração é importante",
-
+  "Choose City": "Seleccione a cidade",
+  "Cities": "Cidades",
+  "Countries": "Países",
 };

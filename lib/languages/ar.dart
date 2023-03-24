@@ -55,4 +55,7 @@ const Map<String, String> Arabic = {
   "enter prayer name": "أدخل اسم المؤذن",
   "Add Prayer": "إضافة المؤذن",
   "prayer name is important": "اسم المؤذن مطلوب",
+  "Choose City": "اختر المدينة",
+  "Cities": "المدن",
+  "Countries": "الدول",
 };

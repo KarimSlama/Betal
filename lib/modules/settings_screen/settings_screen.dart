@@ -1,5 +1,6 @@
 import 'package:Betal/layouts/mainLayout.dart';
 import 'package:Betal/models/prayer_model.dart';
+import 'package:Betal/modules/countries_screen/countries_screen.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
@@ -9,10 +10,11 @@ import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:Betal/styles/icon_broken.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+
+import '../../prayer_notification.dart';
 
 class SettingsScreen extends StatefulWidget {
   final PrayerModel? prayerModel;
@@ -28,6 +30,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool initialValue = true;
   bool isSwitch = true;
+
+  // var isSwitchLocation;
   bool isMadhab = true;
   bool isClockSystem = true;
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -43,7 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (state is PrayerInsertDatabaseState) {
           Navigator.pop(context);
           prayerController.clear();
-        } // end if()
+        }
       },
       builder: (context, state) {
         var prayers = MainCubit.getContext(context).prayersList;
@@ -105,7 +109,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       data: ThemeData()
                           .copyWith(dividerColor: Colors.transparent),
                       child: ExpansionTile(
-                        onExpansionChanged: (value) {},
                         title: Text(
                           'Location'.tr,
                           style: TextStyle(
@@ -120,17 +123,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Colors.green.shade800)
                             : const Icon(Icons.arrow_forward_ios_outlined),
                         children: [
-                          customSwitch(
-                            context,
-                            'Location Permission'.tr,
-                            isSwitch,
-                            (value) {
-                              setState(() {
-                                isSwitch = !isSwitch;
-                              });
-                              MainCubit.getContext(context).changeSwitchIcon();
-                            },
-                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (isSwitch == false)
+                                InkWell(
+                                  onTap: () {
+                                    navigateTo(
+                                        context, const CountriesScreen());
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding:
+                                        const EdgeInsetsDirectional.symmetric(
+                                            horizontal: 12.0, vertical: 16.0),
+                                    child: Text(
+                                      'Choose City'.tr,
+                                      style: TextStyle(
+                                        color: ModeCubit.getContext(context)
+                                                    .isDark ==
+                                                true
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              customSwitch(
+                                context,
+                                'Location Permission'.tr,
+                                isSwitch,
+                                (value) {
+                                  setState(() {
+                                    isSwitch = !isSwitch;
+                                    CacheHelper.saveData(
+                                            key: 'isSwitch', value: isSwitch)
+                                        .then((value) {
+                                      setState(() {
+                                        isSwitch = CacheHelper.getData(
+                                            key: 'isSwitch');
+                                      });
+                                    });
+                                  });
+                                  MainCubit.getContext(context)
+                                      .changeSwitchIcon();
+                                },
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),
@@ -707,8 +747,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget buildPrayers(Map prayers, index) => InkWell(
-        onTap: () async {
-          selectedSound = prayers['prayer_name'];
+        onTap: () {
+          selectedSound = prayers['prayer_path'];
           CacheHelper.saveData(key: 'prayer_call', value: selectedSound);
           selectedSound = CacheHelper.getData(key: 'prayer_call');
           print('the selected sound is $selectedSound');
@@ -751,7 +791,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
           child: Text(
-            languages[index],
+            languages[index].tr,
             style: TextStyle(
               color: selectedCurrentLanguage == languages[index]
                   ? Colors.green
@@ -780,13 +820,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   ];
 
   List<int> notificationSelected = [];
-  List<int> notificationSelectedIndex = [];
 
   @override
   void initState() {
     super.initState();
     notificationSelected = List.generate(prayersName.length, (index) => 0);
     notificationSelectedIndex = List.generate(prayersName.length, (index) => 0);
+    isSwitch = CacheHelper.getData(key: 'isSwitch') ?? true;
   }
 
   Widget buildNotificationSystem(index) {
@@ -853,9 +893,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return InkWell(
       onTap: () {
         setState(() {
-          // Update the selected option for the current prayer index
           notificationSelected[index] = listIndex;
-          // Save the selected option to cache
           CacheHelper.saveData(
             key: 'selectedOption$index',
             value: notificationSelected[index],
@@ -867,6 +905,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             });
           });
         });
+        print(notificationSelectedIndex);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),

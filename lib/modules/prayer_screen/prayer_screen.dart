@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:Betal/notification_model.dart';
+import 'package:Betal/prayer_notification.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
+import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -18,13 +22,6 @@ class PrayerScreen extends StatefulWidget {
 }
 
 class _PrayerScreenState extends State<PrayerScreen> {
-  var fajr;
-  var sunrise;
-  var dhuhr;
-  var asr;
-  var maghrib;
-  var isha;
-
   @override
   void initState() {
     super.initState();
@@ -33,16 +30,29 @@ class _PrayerScreenState extends State<PrayerScreen> {
     isMuteList = List.generate(prayersName.length, (index) => false);
   }
 
+  var fajr;
+  var sunrise;
+  var dhuhr;
+  var asr;
+  var maghrib;
+  var isha;
+  var upcomingLevelPrayer;
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MainCubit, MainState>(
       listener: (context, state) {},
       builder: (context, state) {
         var prayer = MainCubit.getContext(context).prayerDataModel;
+
         TimeOfDay stringToTimeOfDay(String time) {
           final format = DateFormat.Hm();
           return TimeOfDay.fromDateTime(format.parse(time));
         }
+
+        if (prayer == null ||
+            prayer.data == null ||
+            prayer.data?.timings == null) {}
 
         fajr = stringToTimeOfDay(prayer!.data!.timings!.fajr!);
         sunrise = stringToTimeOfDay(prayer.data!.timings!.sunrise!);
@@ -80,19 +90,44 @@ class _PrayerScreenState extends State<PrayerScreen> {
         DateTime upcomingPrayerTime(
             DateTime currentDate, List<DateTime> prayerTimes) {
           for (int i = 0; i < prayerTimes.length; i++) {
-            if (currentDate.isAtSameMomentAs(prayerTimes[i])) {
+            if (currentDate.isBefore(prayerTimes[i])) {
               return prayerTimes[i];
             }
           }
-          // If the current time is after the last prayer time, return the next day's Fajr time
           return prayerTimes[0].add(const Duration(days: 1));
         }
 
-        NotificationService.showNotification(
-          title: '$upcomingLevelPrayer prayer',
-          body: '$upcomingLevelPrayer prayer time is coming',
-          flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-          time: upcomingPrayerTime(currentDate, prayerTimes),
+        DateTime nextPrayerTime =
+            upcomingPrayerTime(DateTime.now(), prayerTimes);
+
+        int hour = nextPrayerTime.hour;
+        int minute = nextPrayerTime.minute;
+
+        // String upcomingPrayer() {
+        //   DateTime now = DateTime.now();
+        //
+        //   if (now.isBefore(fajr)) {
+        //     return 'Fajr';
+        //   } else if (now.isBefore(dhuhr) && dhuhr.isAfter(now)) {
+        //     return 'Dhuhr';
+        //   } else if (now.isBefore(asr) && asr.isAfter(now)) {
+        //     return 'Asr';
+        //   } else if (now.isBefore(maghrib) && maghrib.isAfter(now)) {
+        //     return 'Maghrib';
+        //   } else if (now.isBefore(isha) && isha.isAfter(now)) {
+        //     return 'Isha';
+        //   } else {
+        //     return 'Fajr';
+        //   }
+        // }
+        //
+        // String prayerName = upcomingPrayer();
+
+        PrayerNotification.createNotification(
+          'prayerName Time',
+          'prayerName Prayer Time',
+          hour,
+          minute,
         );
 
         return Padding(
@@ -249,12 +284,14 @@ class _PrayerScreenState extends State<PrayerScreen> {
                 child: ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => buildPrayerList(
-                        prayersList,
-                        index,
-                        context,
-                        upcomingPrayerTime(currentDate, prayerTimes)),
+                          prayersList,
+                          index,
+                          context,
+                          hour,
+                          minute,
+                        ),
                     separatorBuilder: (context, index) => divider(),
-                    itemCount: prayerTimesTiming.length),
+                    itemCount: prayersName.length),
               ),
             ],
           ),
@@ -262,22 +299,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
       },
     );
   }
-
-  // Widget buildTime(context) {
-  //   String twoDigits(int n) => n.toString().padLeft(2, '0');
-  //   final hours = twoDigits(duration.inHours);
-  //   final minutes = twoDigits(duration.inMinutes.remainder(60));
-  //   final seconds = twoDigits(duration.inSeconds.remainder(60));
-  //   return Text(
-  //     '$hours hr:$minutes min:$seconds sec'.tr,
-  //     style: TextStyle(
-  //       fontSize: 20.0,
-  //       color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-  //           ? Colors.white
-  //           : Colors.black,
-  //     ),
-  //   );
-  // }
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -292,11 +313,13 @@ class _PrayerScreenState extends State<PrayerScreen> {
   ];
 
   int openIndex = -1;
+  int selectedIcon = 0;
+
+  // int selectedIconIndex = 0;
+
   bool? isNotificationOn;
   bool? isVibrationOn;
   bool? isMute;
-  int selectedIcon = 0;
-
   List<bool> isNotificationOnList = [];
   List<bool> isVibrationOnList = [];
   List<bool> isMuteList = [];
@@ -333,8 +356,10 @@ class _PrayerScreenState extends State<PrayerScreen> {
     });
   }
 
-  Widget buildPrayerList(List<String> prayers, int index, BuildContext context,
-      DateTime notificationPrayerTime) {
+  Widget buildPrayerList(
+      List<String> prayers, index, context, int hour, int minute) {
+    int selectedIconIndex =
+        CacheHelper.getData(key: 'selectedOption$index') ?? 0;
     return DefaultTextStyle(
       style: TextStyle(
         fontSize: 16.0,
@@ -367,11 +392,10 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       shape: StadiumBorder(),
                     ),
                   ),
-                  if (isNotificationOnList[index])
+                  if (selectedIconIndex == 0)
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedIcon = 0;
                           isNotificationOnList[index] = true;
                           isVibrationOnList[index] = false;
                           isMuteList[index] = false;
@@ -390,11 +414,10 @@ class _PrayerScreenState extends State<PrayerScreen> {
                         ),
                       ),
                     ),
-                  if (isVibrationOnList[index])
+                  if (selectedIconIndex == 1)
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedIcon = 1;
                           isNotificationOnList[index] = false;
                           isVibrationOnList[index] = true;
                           isMuteList[index] = false;
@@ -411,24 +434,15 @@ class _PrayerScreenState extends State<PrayerScreen> {
                                 isVibrationOnList[index] =
                                     !isVibrationOnList[index];
                               });
-                              NotificationService
-                                  .scheduleWithNoSoundNotification(
-                                title: '${prayers[index]} prayer',
-                                body: '${prayers[index]} prayer time is coming',
-                                flutterLocalNotificationsPlugin:
-                                    flutterLocalNotificationsPlugin,
-                                time: notificationPrayerTime,
-                              );
                             },
                             icon: const Icon(Icons.vibration,
                                 color: Colors.orangeAccent)),
                       ),
                     ),
-                  if (isMuteList[index])
+                  if (selectedIconIndex == 2)
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedIcon = 2;
                           isNotificationOnList[index] = false;
                           isVibrationOnList[index] = false;
                           isMuteList[index] = true;
@@ -444,7 +458,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                                 toggleOpen(index);
                                 isMuteList[index] = !isMuteList[index];
                               });
-                              NotificationService.stopNotification();
+                              PrayerNotification.cancelNotification();
                             },
                             icon: const Icon(Icons.notifications_off,
                                 color: Colors.black12)),
@@ -468,17 +482,24 @@ class _PrayerScreenState extends State<PrayerScreen> {
                                 onPressed: () {
                                   setState(() {
                                     toggleOpen(index);
+                                    selectedIcon = 1;
                                     isVibrationOnList[index] =
                                         !isVibrationOnList[index];
+                                    CacheHelper.saveData(
+                                            key: 'selectedOption$index',
+                                            value: selectedIcon)
+                                        .then((value) {
+                                      setState(() {
+                                        selectedIconIndex = CacheHelper.getData(
+                                            key: 'selectedOption$index');
+                                      });
+                                    });
                                   });
-                                  NotificationService
-                                      .scheduleWithNoSoundNotification(
-                                    title: '${prayers[index]} prayer',
-                                    body:
-                                        '${prayers[index]} prayer time is coming',
-                                    flutterLocalNotificationsPlugin:
-                                        flutterLocalNotificationsPlugin,
-                                    time: notificationPrayerTime,
+                                  PrayerNotification.createAlertNotification(
+                                    'prayerName Time',
+                                    'prayerName Prayer Time',
+                                    hour,
+                                    minute,
                                   );
                                 },
                                 icon: const Icon(Icons.vibration,
@@ -493,10 +514,20 @@ class _PrayerScreenState extends State<PrayerScreen> {
                             child: IconButton(
                                 onPressed: () {
                                   setState(() {
+                                    selectedIcon = 2;
                                     toggleOpen(index);
                                     isMuteList[index] = !isMuteList[index];
+                                    CacheHelper.saveData(
+                                            key: 'selectedOption$index',
+                                            value: selectedIcon)
+                                        .then((value) {
+                                      setState(() {
+                                        selectedIconIndex = CacheHelper.getData(
+                                            key: 'selectedOption$index');
+                                      });
+                                    });
                                   });
-                                  NotificationService.stopNotification();
+                                  PrayerNotification.cancelNotification();
                                 },
                                 icon: const Icon(Icons.notifications_off,
                                     color: Colors.black26)),
@@ -523,26 +554,5 @@ class _PrayerScreenState extends State<PrayerScreen> {
         ),
       ),
     );
-  }
-
-  var upcomingLevelPrayer;
-
-  String upcomingPrayer() {
-    if (currentDate.isAtSameMomentAs(fajr!)) {
-      return upcomingLevelPrayer = 'Fajr';
-    } else if (currentDate.isAtSameMomentAs(dhuhr!) &&
-        dhuhr!.hourOfPeriod == currentDate.timeZoneOffset.inHours) {
-      return upcomingLevelPrayer = 'Dhuhr';
-    } else if (currentDate.isAtSameMomentAs(asr!) &&
-        asr!.hourOfPeriod == currentDate.timeZoneOffset.inHours) {
-      return upcomingLevelPrayer = 'Asr';
-    } else if (currentDate.isAtSameMomentAs(maghrib!) &&
-        maghrib!.hourOfPeriod == currentDate.timeZoneOffset.inHours) {
-      return upcomingLevelPrayer = 'Maghrib';
-    } else if (currentDate.isAtSameMomentAs(isha!) &&
-        isha!.hourOfPeriod == currentDate.timeZoneOffset.inHours) {
-      return upcomingLevelPrayer = 'Isha';
-    }
-    return upcomingLevelPrayer;
   }
 }

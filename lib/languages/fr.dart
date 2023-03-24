@@ -51,4 +51,7 @@ const Map<String, String> French = {
   "enter prayer name":"entrer le nom du joueur",
   "Add Prayer":"Ajouter un lecteur",
   "prayer name is important": "nom de prière est important",
+  "Choose City": "Choisir une ville",
+  "Cities": "Villes",
+  "Countries": "Pays",
 };

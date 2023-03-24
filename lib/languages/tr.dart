@@ -51,4 +51,7 @@ const Map<String, String> Turkish = {
   "enter prayer name": "oyuncu adını girin",
   "Add Prayer": "Oyuncu Ekle",
   "prayer name is important": "namaz i̇smi önemlidir",
+  "Choose City": "Şehir Seç",
+  "Cities": "şehirler",
+  "Countries": "ülkede",
 };

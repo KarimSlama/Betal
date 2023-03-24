@@ -51,4 +51,7 @@ const Map<String, String> Russian = {
   "enter prayer name":"вводить имя игрока",
   "Add Prayer":"Добавлять игрока",
   "prayer name is important": "молитвенное имя важно",
+  "Choose City": "Bыберите город",
+  "Cities": "городов",
+  "Countries": "странах",
 };

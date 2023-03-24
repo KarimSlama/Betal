@@ -1,12 +1,14 @@
 import 'package:Betal/models/translation.dart';
 import 'package:Betal/modules/splash_screen/splash_screen.dart';
 import 'package:Betal/notification_model.dart';
+import 'package:Betal/prayer_notification.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:Betal/shared/cubit/observer.dart';
 import 'package:Betal/shared/cubit/states/mode_state.dart';
 import 'package:Betal/shared/data/local_storage/cache_helper.dart';
+import 'package:Betal/shared/data/network/country_dio_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:Betal/styles/theme.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +21,10 @@ void main() async {
       FlutterLocalNotificationsPlugin();
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
-  await NotificationService.initializeNotification(
-      flutterLocalNotificationsPlugin);
+  PrayerNotification.initializeLocalNotifications();
   await CacheHelper.init();
   await DioHelper.init();
+  await CountryDioHelper.init();
   latitude = CacheHelper.getData(key: 'latitude');
   longitude = CacheHelper.getData(key: 'longitude');
   city = CacheHelper.getData(key: 'city');
@@ -30,7 +32,6 @@ void main() async {
   bool? isDark = CacheHelper.getData(key: 'isDark');
   selectedCurrentLanguage = CacheHelper.getData(key: 'language');
   selectedSound = CacheHelper.getData(key: 'prayer_call');
-
   runApp(MyApp(
     selectedLanguage: selectedCurrentLanguage,
     isDark: isDark,
@@ -50,7 +51,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => MainCubit()
             ..getTimeWithCity(city: city, country: country)
-            ..createDatabase(),
+            ..createDatabase()
+            ..getAllCountries(),
         ),
         BlocProvider(
           create: (context) => ModeCubit()..changeMode(fromShared: isDark),

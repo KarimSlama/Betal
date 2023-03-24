@@ -255,7 +255,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 if (isLast) {
                   CacheHelper.saveData(key: 'language', value: selectedLanguage)
                       .then((value) {
-                    selectedCurrentLanguage = CacheHelper.getData(key: 'language');
+                    selectedCurrentLanguage =
+                        CacheHelper.getData(key: 'language');
                     submit();
                   });
                 }
