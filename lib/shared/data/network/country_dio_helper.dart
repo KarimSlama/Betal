@@ -10,18 +10,14 @@ class CountryDioHelper {
         receiveDataWhenStatusError: true,
       ),
     );
-  } //end init()
+  }
 
-    static Future<Response> getData({
+  static Future<Response> getData({
     required String url,
-    Map<String, dynamic>? query,
   }) async {
     dio!.options.headers = {
       'Content-Type': 'application/json',
     };
-    return await dio!.get(
-      url,
-      queryParameters: query,
-    );
-  } //end postUserData()
+    return await dio!.get(url);
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:Betal/modules/cities_screen/cities_screen.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
@@ -45,7 +46,9 @@ class CountriesScreen extends StatelessWidget {
   }
 
   Widget buildCountriesList(context, index) => InkWell(
-        onTap: () {},
+        onTap: () {
+          navigateTo(context, const CityScreen());
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 16.0),
           child: Text(

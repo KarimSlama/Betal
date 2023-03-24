@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:Betal/models/calendar_time_model.dart';
-import 'package:Betal/models/countries_model.dart';
+import 'package:Betal/models/country_model.dart';
 import 'package:Betal/models/data_with_day_model.dart';
 import 'package:Betal/models/prayer_data_model.dart';
 import 'package:Betal/modules/calendar_screen/calender_screen.dart';
@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 class MainCubit extends Cubit<MainState> {
   MainCubit() : super(MainLayoutInitializeState());
@@ -91,14 +90,13 @@ class MainCubit extends Cubit<MainState> {
       },
     ).then((value) {
       dataWithDayModel = DataWithDayModel.fromJson(value.data);
-      print(value);
     }).catchError((error) {
       emit(DataWithDayErrorState());
     });
   }
 
-  CountriesModel? countriesModel;
-  List<CountriesModel> countries = [];
+  CountryModel? countriesModel;
+  List<CountryModel> countries = [];
 
   void getAllCountries() {
     emit(GetAllCountriesLoadingState());
@@ -106,22 +104,11 @@ class MainCubit extends Cubit<MainState> {
     CountryDioHelper.getData(
       url: 'v3.1/all',
     ).then((value) {
-      // print(value);
-      countriesModel = CountriesModel.fromJson(value.data);
-      // if (countriesModel != null) {
-      //   for (var element in value.data) {
-      //     countries.add(element);
-      //   }
-      //   emit(GetAllCountriesSuccessState());
-      // } else if (value.data is List) {
-      //   List<dynamic> dataList = value.data.toList();
-      //   for (var element in dataList) {
-      //     countries.add(CountriesModel.fromJson(element));
-      //   }
-      //   emit(GetAllCountriesSuccessState());
-      // } else {
-      //   emit(GetAllCountriesErrorState());
-      // }
+      value.data.forEach((element) {
+        countries.add(CountryModel.fromJson(element));
+      });
+      print(countries.length);
+      emit(GetAllCountriesSuccessState());
     }).catchError((error) {
       print(error.toString());
       emit(GetAllCountriesErrorState());
@@ -202,10 +189,6 @@ class MainCubit extends Cubit<MainState> {
             .then((value) {});
       },
       onOpen: (database) {
-        insertIntoDatabase(
-            prayerName: 'Ahmed Al nafis',
-            prayerPath: '/data/user/0/com.example.battal/cache/'
-                'file_picker/أذان يأخذك لعالم آخر _ A prayer call that takes you to another world(MP3_128K).mp3');
         getAllData(database);
       },
     ).then((value) {

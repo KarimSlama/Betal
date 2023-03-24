@@ -1,6 +1,5 @@
 import 'package:Betal/models/translation.dart';
 import 'package:Betal/modules/splash_screen/splash_screen.dart';
-import 'package:Betal/notification_model.dart';
 import 'package:Betal/prayer_notification.dart';
 import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
@@ -17,14 +16,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
 void main() async {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
   PrayerNotification.initializeLocalNotifications();
+  await CountryDioHelper.init();
   await CacheHelper.init();
   await DioHelper.init();
-  await CountryDioHelper.init();
   latitude = CacheHelper.getData(key: 'latitude');
   longitude = CacheHelper.getData(key: 'longitude');
   city = CacheHelper.getData(key: 'city');

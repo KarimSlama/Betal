@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:Betal/notification_model.dart';
 import 'package:Betal/prayer_notification.dart';
 import 'package:Betal/shared/components/components.dart';
 import 'package:Betal/shared/components/constants.dart';
@@ -10,7 +7,6 @@ import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -43,16 +39,14 @@ class _PrayerScreenState extends State<PrayerScreen> {
     return BlocConsumer<MainCubit, MainState>(
       listener: (context, state) {},
       builder: (context, state) {
-        var prayer = MainCubit.getContext(context).prayerDataModel;
+        var prayer = MainCubit
+            .getContext(context)
+            .prayerDataModel;
 
         TimeOfDay stringToTimeOfDay(String time) {
           final format = DateFormat.Hm();
           return TimeOfDay.fromDateTime(format.parse(time));
         }
-
-        if (prayer == null ||
-            prayer.data == null ||
-            prayer.data?.timings == null) {}
 
         fajr = stringToTimeOfDay(prayer!.data!.timings!.fajr!);
         sunrise = stringToTimeOfDay(prayer.data!.timings!.sunrise!);
@@ -87,8 +81,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
           prayerTimes.add(prayerTime);
         }
 
-        DateTime upcomingPrayerTime(
-            DateTime currentDate, List<DateTime> prayerTimes) {
+        DateTime upcomingPrayerTime(DateTime currentDate,
+            List<DateTime> prayerTimes) {
           for (int i = 0; i < prayerTimes.length; i++) {
             if (currentDate.isBefore(prayerTimes[i])) {
               return prayerTimes[i];
@@ -98,34 +92,48 @@ class _PrayerScreenState extends State<PrayerScreen> {
         }
 
         DateTime nextPrayerTime =
-            upcomingPrayerTime(DateTime.now(), prayerTimes);
+        upcomingPrayerTime(DateTime.now(), prayerTimes);
+
+        String upcomingPrayer() {
+          DateTime now = DateTime.now();
+
+          if (now.isBefore(DateTime(now.year, now.month, now.day,
+              fajr.hour, fajr.minute))) {
+            return 'Fajr';
+          } else if (now.isBefore(DateTime(now.year, now.month, now.day,
+              dhuhr.hour, dhuhr.minute)) &&
+              DateTime(now.year, now.month, now.day, dhuhr.hour, dhuhr.minute)
+                  .isAfter(now)) {
+            return 'Dhuhr';
+          } else if (now.isBefore(DateTime(now.year, now.month, now.day,
+              asr.hour, asr.minute)) &&
+              DateTime(now.year, now.month, now.day, asr.hour, asr.minute)
+                  .isAfter(now)) {
+            return 'Asr';
+          } else if (now.isBefore(DateTime(now.year, now.month, now.day,
+              maghrib.hour, maghrib.minute)) &&
+              DateTime(
+                  now.year, now.month, now.day, maghrib.hour, maghrib.minute)
+                  .isAfter(now)) {
+            return 'Maghrib';
+          } else if ((now.isBefore(DateTime(now.year, now.month, now.day,
+              isha.hour, isha.minute)) &&
+              DateTime(now.year, now.month, now.day, isha.hour, isha.minute)
+                  .isAfter(now))) {
+            return 'Isha';
+          } else {
+            return 'Fajr';
+          }
+        }
+
+        String prayerName = upcomingPrayer();
 
         int hour = nextPrayerTime.hour;
         int minute = nextPrayerTime.minute;
 
-        // String upcomingPrayer() {
-        //   DateTime now = DateTime.now();
-        //
-        //   if (now.isBefore(fajr)) {
-        //     return 'Fajr';
-        //   } else if (now.isBefore(dhuhr) && dhuhr.isAfter(now)) {
-        //     return 'Dhuhr';
-        //   } else if (now.isBefore(asr) && asr.isAfter(now)) {
-        //     return 'Asr';
-        //   } else if (now.isBefore(maghrib) && maghrib.isAfter(now)) {
-        //     return 'Maghrib';
-        //   } else if (now.isBefore(isha) && isha.isAfter(now)) {
-        //     return 'Isha';
-        //   } else {
-        //     return 'Fajr';
-        //   }
-        // }
-        //
-        // String prayerName = upcomingPrayer();
-
         PrayerNotification.createNotification(
-          'prayerName Time',
-          'prayerName Prayer Time',
+          '$prayerName Time',
+          '$prayerName Prayer Time',
           hour,
           minute,
         );
@@ -161,51 +169,59 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       fontSize: 24,
                       fontWeight: FontWeight.w500),
                 ),
-              ] else if (currentDate.hour >= fajr.hour &&
-                      currentDate.hour < dhuhr.hour ||
-                  currentDate.minute <= dhuhr.minute) ...[
-                Text('Dhuhr'.tr,
-                    style: TextStyle(
-                        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500))
-              ] else if (currentDate.hour >= dhuhr.hour &&
+              ] else
+                if (currentDate.hour >= fajr.hour &&
+                    currentDate.hour < dhuhr.hour ||
+                    currentDate.minute <= dhuhr.minute) ...[
+                  Text('Dhuhr'.tr,
+                      style: TextStyle(
+                          color: (currentDate.hour >= 20 ||
+                              currentDate.hour <= 5)
+                              ? Colors.white
+                              : Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500))
+                ] else
+                  if (currentDate.hour >= dhuhr.hour &&
                       currentDate.hour <= asr.hour ||
-                  currentDate.minute <= asr.minute) ...[
-                Text('Asr'.tr,
-                    style: TextStyle(
-                        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500)),
-              ] else if (currentDate.hour >= asr.hour &&
-                      currentDate.hour <= maghrib.hour ||
-                  currentDate.minute <= maghrib.minute) ...[
-                Text(
-                  'Maghrib'.tr,
-                  style: TextStyle(
-                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                          ? Colors.white
-                          : Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500),
-                ),
-              ] else if (currentDate.hour >= maghrib.hour &&
-                  currentDate.hour <= isha.hour &&
-                  currentDate.minute <= isha.minute) ...[
-                Text(
-                  'Isha'.tr,
-                  style: TextStyle(
-                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                          ? Colors.white
-                          : Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500),
-                ),
-              ],
+                      currentDate.minute <= asr.minute) ...[
+                    Text('Asr'.tr,
+                        style: TextStyle(
+                            color: (currentDate.hour >= 20 ||
+                                currentDate.hour <= 5)
+                                ? Colors.white
+                                : Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500)),
+                  ] else
+                    if (currentDate.hour >= asr.hour &&
+                        currentDate.hour <= maghrib.hour ||
+                        currentDate.minute <= maghrib.minute) ...[
+                      Text(
+                        'Maghrib'.tr,
+                        style: TextStyle(
+                            color: (currentDate.hour >= 20 || currentDate
+                                .hour <= 5)
+                                ? Colors.white
+                                : Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ] else
+                      if (currentDate.hour >= maghrib.hour &&
+                          currentDate.hour <= isha.hour &&
+                          currentDate.minute <= isha.minute) ...[
+                        Text(
+                          'Isha'.tr,
+                          style: TextStyle(
+                              color: (currentDate.hour >= 20 ||
+                                  currentDate.hour <= 5)
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ],
               const SizedBox(
                 height: 16,
               ),
@@ -220,51 +236,59 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       fontSize: 24,
                       fontWeight: FontWeight.w500),
                 ),
-              ] else if (currentDate.hour >= fajr.hour &&
-                      currentDate.hour < dhuhr.hour ||
-                  currentDate.minute <= dhuhr.minute) ...[
-                Text('${prayer.data?.timings?.dhuhr}',
-                    style: TextStyle(
-                        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500))
-              ] else if (currentDate.hour >= dhuhr.hour &&
+              ] else
+                if (currentDate.hour >= fajr.hour &&
+                    currentDate.hour < dhuhr.hour ||
+                    currentDate.minute <= dhuhr.minute) ...[
+                  Text('${prayer.data?.timings?.dhuhr}',
+                      style: TextStyle(
+                          color: (currentDate.hour >= 20 ||
+                              currentDate.hour <= 5)
+                              ? Colors.white
+                              : Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500))
+                ] else
+                  if (currentDate.hour >= dhuhr.hour &&
                       currentDate.hour <= asr.hour ||
-                  currentDate.minute <= asr.minute) ...[
-                Text('${prayer.data?.timings?.asr}',
-                    style: TextStyle(
-                        color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500)),
-              ] else if (currentDate.hour >= asr.hour &&
-                      currentDate.hour <= maghrib.hour ||
-                  currentDate.minute <= maghrib.minute) ...[
-                Text(
-                  '${prayer.data?.timings?.maghrib}',
-                  style: TextStyle(
-                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                          ? Colors.white
-                          : Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500),
-                ),
-              ] else if (currentDate.hour >= maghrib.hour &&
-                  currentDate.hour <= isha.hour &&
-                  currentDate.minute <= isha.minute) ...[
-                Text(
-                  '${prayer.data?.timings?.isha}',
-                  style: TextStyle(
-                      color: (currentDate.hour >= 20 || currentDate.hour <= 5)
-                          ? Colors.white
-                          : Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500),
-                ),
-              ],
+                      currentDate.minute < asr.minute) ...[
+                    Text('${prayer.data?.timings?.asr}',
+                        style: TextStyle(
+                            color: (currentDate.hour >= 20 ||
+                                currentDate.hour <= 5)
+                                ? Colors.white
+                                : Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500)),
+                  ] else
+                    if (currentDate.hour >= asr.hour &&
+                        currentDate.hour <= maghrib.hour ||
+                        currentDate.minute <= maghrib.minute) ...[
+                      Text(
+                        '${prayer.data?.timings?.maghrib}',
+                        style: TextStyle(
+                            color: (currentDate.hour >= 20 || currentDate
+                                .hour <= 5)
+                                ? Colors.white
+                                : Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ] else
+                      if (currentDate.hour >= maghrib.hour &&
+                          currentDate.hour <= isha.hour &&
+                          currentDate.minute <= isha.minute) ...[
+                        Text(
+                          '${prayer.data?.timings?.isha}',
+                          style: TextStyle(
+                              color: (currentDate.hour >= 20 ||
+                                  currentDate.hour <= 5)
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ],
               const SizedBox(
                 height: 30.0,
               ),
@@ -274,16 +298,19 @@ class _PrayerScreenState extends State<PrayerScreen> {
                 height: 370.0,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadiusDirectional.circular(30.0),
-                  color: ModeCubit.getContext(context).isDark == true
+                  color: ModeCubit
+                      .getContext(context)
+                      .isDark == true
                       ? (currentDate.hour >= 20 && currentDate.hour <= 5 ||
-                              currentDate.timeZoneOffset.inHours <= 5)
-                          ? Colors.white
-                          : azanBoxColor.withOpacity(.6)
+                      currentDate.timeZoneOffset.inHours <= 5)
+                      ? Colors.white
+                      : azanBoxColor.withOpacity(.6)
                       : Colors.black.withOpacity(.5),
                 ),
                 child: ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => buildPrayerList(
+                    itemBuilder: (context, index) =>
+                        buildPrayerList(
                           prayersList,
                           index,
                           context,
@@ -300,9 +327,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
     );
   }
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
   List<String> prayersName = [
     'Fajr',
     'Sunrise',
@@ -314,8 +338,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
 
   int openIndex = -1;
   int selectedIcon = 0;
-
-  // int selectedIconIndex = 0;
 
   bool? isNotificationOn;
   bool? isVibrationOn;
@@ -356,14 +378,16 @@ class _PrayerScreenState extends State<PrayerScreen> {
     });
   }
 
-  Widget buildPrayerList(
-      List<String> prayers, index, context, int hour, int minute) {
+  Widget buildPrayerList(List<String> prayers, index, context, int hour,
+      int minute) {
     int selectedIconIndex =
         CacheHelper.getData(key: 'selectedOption$index') ?? 0;
     return DefaultTextStyle(
       style: TextStyle(
         fontSize: 16.0,
-        color: ModeCubit.getContext(context).isDark == true
+        color: ModeCubit
+            .getContext(context)
+            .isDark == true
             ? Colors.black
             : Colors.white.withOpacity(.7),
       ),
@@ -392,29 +416,28 @@ class _PrayerScreenState extends State<PrayerScreen> {
                       shape: StadiumBorder(),
                     ),
                   ),
-                  if (selectedIconIndex == 0)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isNotificationOnList[index] = true;
-                          isVibrationOnList[index] = false;
-                          isMuteList[index] = false;
-                        });
-                        toggleOpen(index);
-                      },
-                      child: CircleAvatar(
-                        radius: 22,
-                        backgroundColor: green.withOpacity(.3),
-                        child: IconButton(
-                          onPressed: () {
-                            toggleOpen(index);
-                          },
-                          icon: Icon(Icons.notifications_active,
-                              color: Colors.green.shade400),
-                        ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isNotificationOnList[index] = true;
+                        isVibrationOnList[index] = false;
+                        isMuteList[index] = false;
+                      });
+                      toggleOpen(index);
+                    },
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: green.withOpacity(.3),
+                      child: IconButton(
+                        onPressed: () {
+                          toggleOpen(index);
+                        },
+                        icon: Icon(Icons.notifications_active,
+                            color: Colors.green.shade400),
                       ),
                     ),
-                  if (selectedIconIndex == 1)
+                  ),
+                  if (isVibrationOnList[index] || selectedIconIndex == 1)
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -432,7 +455,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                               setState(() {
                                 toggleOpen(index);
                                 isVibrationOnList[index] =
-                                    !isVibrationOnList[index];
+                                !isVibrationOnList[index];
                               });
                             },
                             icon: const Icon(Icons.vibration,
@@ -484,10 +507,10 @@ class _PrayerScreenState extends State<PrayerScreen> {
                                     toggleOpen(index);
                                     selectedIcon = 1;
                                     isVibrationOnList[index] =
-                                        !isVibrationOnList[index];
+                                    !isVibrationOnList[index];
                                     CacheHelper.saveData(
-                                            key: 'selectedOption$index',
-                                            value: selectedIcon)
+                                        key: 'selectedOption$index',
+                                        value: selectedIcon)
                                         .then((value) {
                                       setState(() {
                                         selectedIconIndex = CacheHelper.getData(
@@ -518,8 +541,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
                                     toggleOpen(index);
                                     isMuteList[index] = !isMuteList[index];
                                     CacheHelper.saveData(
-                                            key: 'selectedOption$index',
-                                            value: selectedIcon)
+                                        key: 'selectedOption$index',
+                                        value: selectedIcon)
                                         .then((value) {
                                       setState(() {
                                         selectedIconIndex = CacheHelper.getData(

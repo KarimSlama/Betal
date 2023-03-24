@@ -14,8 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
-import '../../prayer_notification.dart';
-
 class SettingsScreen extends StatefulWidget {
   final PrayerModel? prayerModel;
   final String? localAudio;
@@ -749,8 +747,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget buildPrayers(Map prayers, index) => InkWell(
         onTap: () {
           selectedSound = prayers['prayer_path'];
-          CacheHelper.saveData(key: 'prayer_call', value: selectedSound);
-          selectedSound = CacheHelper.getData(key: 'prayer_call');
+          CacheHelper.saveData(key: 'prayer_call', value: selectedSound)
+              .then((value) {
+            setState(() {
+              selectedSound = CacheHelper.getData(key: 'prayer_call');
+            });
+          });
           print('the selected sound is $selectedSound');
         },
         child: Padding(
@@ -758,9 +760,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Text(
             prayers['prayer_name'],
             style: TextStyle(
-              color: ModeCubit.getContext(context).isDark == true
-                  ? Colors.black
-                  : Colors.white,
+              color: selectedSound != null
+                  ? Colors.green
+                  : ModeCubit.getContext(context).isDark == true
+                      ? Colors.black
+                      : Colors.white,
               fontSize: 16.0,
             ),
           ),
