@@ -4,13 +4,19 @@ import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/cubit/main_cubit.dart';
 import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
+import 'package:Betal/shared/data/local_storage/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-class CountriesScreen extends StatelessWidget {
+class CountriesScreen extends StatefulWidget {
   const CountriesScreen({Key? key}) : super(key: key);
 
+  @override
+  State<CountriesScreen> createState() => _CountriesScreenState();
+}
+
+class _CountriesScreenState extends State<CountriesScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MainCubit, MainState>(
@@ -47,6 +53,21 @@ class CountriesScreen extends StatelessWidget {
 
   Widget buildCountriesList(context, index) => InkWell(
         onTap: () {
+          setState(() {
+            CacheHelper.saveData(
+                    key: 'selectedCountry',
+                    value: MainCubit.getContext(context)
+                        .countries[index]
+                        .name!
+                        .common)
+                .then((value) {
+              setState(() {
+                dynamicCountry = CacheHelper.getData(key: 'selectedCountry');
+              });
+              MainCubit.getContext(context)
+                  .getAllCities(country: dynamicCountry);
+            });
+          });
           navigateTo(context, const CityScreen());
         },
         child: Padding(

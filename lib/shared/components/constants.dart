@@ -11,6 +11,9 @@ const azanBoxColor = Color(0xffa6adc9);
 
 var city;
 var country;
+var dynamicCity;
+var dynamicCountry;
+bool? isSwitch;
 
 var latitude;
 var longitude;

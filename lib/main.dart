@@ -7,12 +7,12 @@ import 'package:Betal/shared/cubit/cubit/mode_cubit.dart';
 import 'package:Betal/shared/cubit/observer.dart';
 import 'package:Betal/shared/cubit/states/mode_state.dart';
 import 'package:Betal/shared/data/local_storage/cache_helper.dart';
+import 'package:Betal/shared/data/network/city_dio_helper.dart';
 import 'package:Betal/shared/data/network/country_dio_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:Betal/styles/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
 void main() async {
@@ -20,12 +20,16 @@ void main() async {
   Bloc.observer = MyBlocObserver();
   PrayerNotification.initializeLocalNotifications();
   await CountryDioHelper.init();
+  await CityDioHelper.init();
   await CacheHelper.init();
   await DioHelper.init();
   latitude = CacheHelper.getData(key: 'latitude');
   longitude = CacheHelper.getData(key: 'longitude');
   city = CacheHelper.getData(key: 'city');
   country = CacheHelper.getData(key: 'country');
+  dynamicCity = CacheHelper.getData(key: 'selectedCity');
+  dynamicCountry = CacheHelper.getData(key: 'selectedCountry');
+  isSwitch = CacheHelper.getData(key: 'isSwitch') ?? true;
   bool? isDark = CacheHelper.getData(key: 'isDark');
   selectedCurrentLanguage = CacheHelper.getData(key: 'language');
   selectedSound = CacheHelper.getData(key: 'prayer_call');
@@ -47,9 +51,12 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => MainCubit()
-            ..getTimeWithCity(city: city, country: country)
+            // ..getTimeWithCity(
+            //     city: isSwitch! ? city : dynamicCity,
+            //     country: isSwitch! ? country : dynamicCountry)
             ..createDatabase()
             ..getAllCountries(),
+          // ..getAllCities(country: country),
         ),
         BlocProvider(
           create: (context) => ModeCubit()..changeMode(fromShared: isDark),

@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:Betal/models/calendar_time_model.dart';
+import 'package:Betal/models/city_model.dart';
 import 'package:Betal/models/country_model.dart';
 import 'package:Betal/models/data_with_day_model.dart';
 import 'package:Betal/models/prayer_data_model.dart';
 import 'package:Betal/modules/calendar_screen/calender_screen.dart';
 import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
+import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
+import 'package:Betal/shared/data/network/city_dio_helper.dart';
 import 'package:Betal/shared/data/network/country_dio_helper.dart';
 import 'package:Betal/shared/data/network/dio_helper.dart';
 import 'package:file_picker/file_picker.dart';
@@ -107,11 +110,33 @@ class MainCubit extends Cubit<MainState> {
       value.data.forEach((element) {
         countries.add(CountryModel.fromJson(element));
       });
-      print(countries.length);
       emit(GetAllCountriesSuccessState());
     }).catchError((error) {
       print(error.toString());
       emit(GetAllCountriesErrorState());
+    });
+  }
+
+  List<CityModel> cities = [];
+
+  void getAllCities({required String country}) {
+    emit(GetAllCitiesLoadingState());
+    cities = [];
+
+    CityDioHelper.getData(
+      url: 'v1/country',
+      query: {
+        'name': country,
+      },
+    ).then((value) {
+      value.data.forEach((element) {
+        cities.add(CityModel.fromJson(element));
+      });
+      print(value.data);
+      emit(GetAllCitiesSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(GetAllCitiesErrorState());
     });
   }
 

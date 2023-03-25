@@ -30,6 +30,12 @@ class GetAllCountriesSuccessState extends MainState {}
 
 class GetAllCountriesErrorState extends MainState {}
 
+class GetAllCitiesLoadingState extends MainState {}
+
+class GetAllCitiesSuccessState extends MainState {}
+
+class GetAllCitiesErrorState extends MainState {}
+
 class ChangeLanguageSuccessState extends MainState {}
 
 class ExpansionTileIconChangedState extends MainState {}

@@ -27,7 +27,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool initialValue = true;
-  bool isSwitch = true;
 
   // var isSwitchLocation;
   bool isMadhab = true;
@@ -150,10 +149,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               customSwitch(
                                 context,
                                 'Location Permission'.tr,
-                                isSwitch,
+                                isSwitch!,
                                 (value) {
                                   setState(() {
-                                    isSwitch = !isSwitch;
+                                    isSwitch = !isSwitch!;
                                     CacheHelper.saveData(
                                             key: 'isSwitch', value: isSwitch)
                                         .then((value) {
