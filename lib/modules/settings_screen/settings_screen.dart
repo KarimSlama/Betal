@@ -28,7 +28,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool initialValue = true;
 
-  // var isSwitchLocation;
   bool isMadhab = true;
   bool isClockSystem = true;
   var scaffoldKey = GlobalKey<ScaffoldState>();

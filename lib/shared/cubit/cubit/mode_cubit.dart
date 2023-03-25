@@ -11,10 +11,8 @@ class ModeCubit extends Cubit<ModeStates> {
 
   void changeMode({bool? fromShared}) {
     if (fromShared != null) {
-      // when fromShared not equal null it means you choice light or dark
       isDark = fromShared;
     } else {
-      // you not choice anything
       isDark = !isDark;
       CacheHelper.saveData(key: 'isDark', value: isDark).then((value) {
         emit(ModeChangeState());

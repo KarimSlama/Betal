@@ -8,7 +8,6 @@ import 'package:Betal/models/prayer_data_model.dart';
 import 'package:Betal/modules/calendar_screen/calender_screen.dart';
 import 'package:Betal/modules/prayer_screen/prayer_screen.dart';
 import 'package:Betal/modules/qibla_screen/qibla_screen.dart';
-import 'package:Betal/shared/components/constants.dart';
 import 'package:Betal/shared/cubit/states/main_state.dart';
 import 'package:Betal/shared/data/network/city_dio_helper.dart';
 import 'package:Betal/shared/data/network/country_dio_helper.dart';
@@ -98,7 +97,6 @@ class MainCubit extends Cubit<MainState> {
     });
   }
 
-  CountryModel? countriesModel;
   List<CountryModel> countries = [];
 
   void getAllCountries() {
@@ -112,7 +110,6 @@ class MainCubit extends Cubit<MainState> {
       });
       emit(GetAllCountriesSuccessState());
     }).catchError((error) {
-      print(error.toString());
       emit(GetAllCountriesErrorState());
     });
   }
@@ -132,10 +129,8 @@ class MainCubit extends Cubit<MainState> {
       value.data.forEach((element) {
         cities.add(CityModel.fromJson(element));
       });
-      print(value.data);
       emit(GetAllCitiesSuccessState());
     }).catchError((error) {
-      print(error.toString());
       emit(GetAllCitiesErrorState());
     });
   }

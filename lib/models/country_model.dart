@@ -1,5 +1,3 @@
-import 'countries_model.dart';
-
 class CountryModel {
   Name? name;
   String? cca2;

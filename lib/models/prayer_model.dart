@@ -17,6 +17,4 @@ class PrayerModel {
       "prayerAudio": prayerAudio,
     };
   }
-
-//
 }
